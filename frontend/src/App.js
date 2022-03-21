@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import React,{useEffect,useState,createContext} from 'react'
+import {Home,GameArea} from './pages'
+import {io} from 'socket.io-client';
+import {BrowserRouter, Route,Routes } from 'react-router-dom'
 
-function App() {
+export const gameContext=createContext(null)
+
+export default function App() {
+  const [roomId,setRoomId]=useState("");
+  const [socket,setSocket]=useState(null);
+  const [userNames,setUserNames]=useState(null)
+  
+
+  useEffect(()=>{
+       let response=io("http://localhost:4000/")
+       setSocket(response)
+ },[])
+
+
+//  console.log(`${groupMessage} This is from App component`)
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <BrowserRouter>
+       <gameContext.Provider value={{socket, userNames, setUserNames,roomId,setRoomId}} >
+        <Routes>
+          < Route path="/" element={<Home/>}/>
+          < Route path="/gamearea" element={<GameArea/>}/>
+         </Routes>
+       </gameContext.Provider>
+       </BrowserRouter>
     </div>
-  );
+  )
 }
-
-export default App;
