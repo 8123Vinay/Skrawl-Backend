@@ -1,6 +1,7 @@
 const {Server}=require('socket.io');
 
 
+// server is a class that creates the server here
 
 class GameSocket{
     instance=null;

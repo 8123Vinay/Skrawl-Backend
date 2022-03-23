@@ -6,12 +6,19 @@ export default function GameArea() {
   
 
 
-  
-
+  if(socket){
+    socket.on('end-round',(message)=>{
+      console.log(message)
+    })
+  } 
+ 
 
   return (
     <div>
-      <h1>Hello from the GameArea</h1>
+      <button onClick={()=>{
+        socket.emit('startNewRound', roomId)
+      }} className="w-12 h-8 bg-blue-600">StartNewRound</button>
+      <h1>Hello game</h1>
       <Message />
       <Users />
        </div>

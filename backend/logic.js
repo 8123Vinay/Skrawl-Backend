@@ -1,14 +1,11 @@
 
-let wordToGuess="King"
+let wordToGuess="king"
 
 function checkWord(word){
-   if(word==wordToGuess){
-    //   I have to do some change in the 
-    // room state
-    // that the player has guessed the word correctly
-    
-   }
-   return false;
+   return(word==wordToGuess)
 }
 
-module.exports=checkWord
+module.exports={checkWord}
+
+// logic checks the score and after that
+// It will update the score depending on that
