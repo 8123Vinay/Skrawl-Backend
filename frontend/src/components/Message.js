@@ -30,7 +30,8 @@ export default function Message() {
          setMessage(e.target.value)
        }} className="border-2 border-indigo-600 "/>
        <button onClick={()=>{
-        socket.emit("group-message", roomId, message)
+          socket.emit("group-message", roomId, message)
+          console.log(message)
           setMessage("")
        }}className="text-white w-20 h-8 bg-blue-600 rounded-lg">Send</button>
 

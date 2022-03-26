@@ -16,7 +16,7 @@ function roundsOptions(){
 
 function timeLimitOptions(){
     let array=[]
-    for(let i=10;i<=100;i+=10){
+    for(let i=0;i<=100000;i+=1000){
       array.push(<option value={i} key={i}>{i}</option>)
     }
     return array
@@ -26,6 +26,7 @@ function timeLimitOptions(){
 // this information has to sent only once by the user
 // generate link how do I do that
 // I will take the url and if that url contains 
+// If start is true i will render gameArea
 
 
   return (
@@ -44,12 +45,10 @@ function timeLimitOptions(){
            {timeLimitOptions()}
          </select>
          <br/>
-     <Link to="/gamearea">
+     <Link to="/game">
      <input type="submit" value="start" onClick={(e)=>{
        e.preventDefault()
        socket.emit('startGame', roomId, rounds, timeLimit);
-
-    //    I have sent the roomId start that game in the room
 
      }} className="w-16 h-8 mt-8 cursor-pointer bg-blue-600 text-white rounded-lg"/>
      </Link>

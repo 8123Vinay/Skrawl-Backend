@@ -1,10 +1,28 @@
 
 const roomStateMap=new Map();
+const socketIdMap=new Map();
+
+// class SockedIdMap{
+//    constructor(){
+//        this.array=[];
+//    }
+// }
+
+
+function addToSocketIdMap(roomId,rooms){
+//    let array=Array.from(rooms.get(roomId))
+//    socketIdMap.set(roomId, array)
+   
+//    console.log(rooms,"THis is rooms")
+}
+
+
 
 class PlayerInfoClass{
     constructor(userName,score){
         this.userName=userName;
         this.score=score
+
     }
    
 }
@@ -21,9 +39,11 @@ class SettingsClass{
 
 
 class RoundStateClass{
-    constructor(timeLimit){
+    constructor(wordToGuess,turnCount,canvasData){
         this.playersMap=new Map();
-        this.timeLimit=timeLimit
+        this.wordToGuess=wordToGuess;
+        this.turnCount=turnCount;
+        this.canvasData=canvasData;
     }
 }
 
@@ -53,20 +73,23 @@ class RoomStateClass{
 
 
 
-function createRoom(RoomId, rounds, timeLimit,startState){
+function createRoom(RoomId, rounds, timeLimit, startState){
     let setting1=new SettingsClass(rounds,timeLimit);
-    let round1=new RoundStateClass(timeLimit)
-    let Room1=new RoomStateClass(setting1,round1,false)
+    let round1=new RoundStateClass('apple',-1,[]);
+    // empty array to the canvas data;
+    let Room1=new RoomStateClass(setting1,round1,startState)
     
     roomStateMap.set(RoomId, Room1);
 
 }
 
 function joinRoom(roomId, socketId,userName){
-    let player1=new PlayerInfoClass(userName, 0)
-    let roomObj=roomStateMap.get(roomId)
+    let player1=new PlayerInfoClass(userName, 0);
+    let roomObj=roomStateMap.get(roomId);
     let playersMap=roomObj.playersMap;
-    playersMap.set(socketId, player1) ;
+    playersMap.set(socketId, player1);
+    addToSocketIdMap()
+    
     roomObj.roundState.playersMap.set(socketId, player1)
 
 }
@@ -77,7 +100,7 @@ function joinRoom(roomId, socketId,userName){
 
 
 
-module.exports={roomStateMap,PlayerInfoClass, SettingsClass, RoomStateClass,joinRoom,createRoom,RoundStateClass}
+module.exports={roomStateMap,PlayerInfoClass, SettingsClass, RoomStateClass,joinRoom,createRoom,RoundStateClass,addToSocketIdMap,socketIdMap}
 
 
 

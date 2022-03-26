@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 
 export default function Home() {
 
-  const { socket, response, setResponse, roomId, setRoomId,linkTo,setLinkTo} = useContext(gameContext)
+  const { socket, response, setResponse, roomId, setRoomId} = useContext(gameContext)
   const [userName, setUserName] = useState("");
 
 
-
+  // console.log(linkTo,"This is linkto")
 
  
   return (
@@ -19,11 +19,11 @@ export default function Home() {
       <input type="text" placeholder="room id" value={roomId} onChange={(e) => {
         setRoomId(e.target.value)
       }} className="border-2 border-indigo-600" />
-      <Link to={linkTo}><button className="text-white w-40 bg-blue-600 rounded-lg" onClick={() => {
+      <Link to='/game'><button className="text-white w-40 bg-blue-600 rounded-lg" onClick={() => {
         socket.emit("join-room", roomId, userName)
         setUserName("")
       }}>Create Room</button></Link>
-      <Link to={linkTo}><button className="text-white w-40 bg-blue-600 rounded-lg" onClick={() => {
+      <Link to="/game"><button className="text-white w-40 bg-blue-600 rounded-lg" onClick={() => {
         socket.emit("join-room", roomId, userName)
         setRoomId("")
         setUserName("")
