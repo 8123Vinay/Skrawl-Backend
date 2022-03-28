@@ -2,102 +2,97 @@ const { socketIdMap }=require("../services/state.js")
 
 // socktIdMap is a room id having the players
 
-// function setWord(word,roomObj){
-//    roomObj.roundState.wordToGuess=word;
+// function setWord(word,roomStateMap.get(roomId)){
+//    roomStateMap.get(roomId).roundState.wordToGuess=word;
 // }
+
+function increaseScore(roomStateMap,roomId, socketId){
+    let score=1000-(0.01)*(Date.now()-roomStateMap.get(roomId).roundState.startedAt)
+    console.log((Date.now()-roomStateMap.get(roomId).roundState.startedAt))
+    roomStateMap.get(roomId).roundState.playersMap.get(socketId).score=score
+    
+}
+
 
 
 function emit(io, Id, messageType, message){
    io.to(Id).emit(messageType, message)
 }
 
-function syncRound(roomObj){
-    let roomPlayersMap=roomObj.playersMap;
-    let roundPlayersMap=roomObj.roundState.playersMap
+function syncRound(roomStateMap,roomId){
 
-    roundPlayersMap.forEach((value,key)=>{
-           roomPlayersMap.get(key).score+=value
+    roomStateMap.get(roomId).roundState.playersMap.forEach((value,key)=>{
+        roomStateMap.get(roomId).playersMap.get(key).score+=value.score;
+
     })
-// after syncing we will send a word to the client who is the drawer
-}
+    console.log("THis is aasdfsdfasdfasdf",roomStateMap.get(roomId).playersMap)
 
-function startNewRound(roomObj,roomId, io, word){
-    console.log('New round started fron the round obj')
-    // let y=setInterval(()=>{
-    //    io.to(roomId).emit("canvas-data", roomObj.roundState.canvasData);
-    // //    set it to zero
-    //    roomObj.roundState.canvasData=[];
-
-    // },100)
-
-    // before starting new round we have to sync the round
-    // increase the round count go till the last
-//    let roomObj=roomStateMap.get(roomId)
-//    console.log(socketIdMap.get(roomId))
-   
-//    roomObj.roundState.turnCount+=1;
-   if(roomObj.roundState.turnCount==socketIdMap.get(roomId).length){
-    //   clearInterval(x);
-      emit(io,roomId,"GameEnd", "The game Has Ended")
-      console.log('game Has ended')
-      return;
-   }
-   count=roomObj.roundState.turnCount;
-//    i have increased the turn count
-
-// now send the word to the person in the count in the map
-
-   syncRound(roomObj);
-
-   emit(io,roomId,"scoreUpdate", roomObj.playersMap)
-
-   roomObj.roundState.wordToGuess=word;
-
-   emit(io,socketIdMap.get(roomId)[count],"wordToGuess", word)
-//    first sync and then start new round
-
-
-    roomObj.roundState.playersMap.forEach((value)=>{
-      value.score=0;
+    // and make score of the players zero in the round;
+    roomStateMap.get(roomId).roundState.playersMap.forEach((value,key)=>{
+        value.score=0;
     })
     
+    // console.log("this is in the syncFunction",roomPlayersMap);
+  
+
+}
+
+function startNewRound(roomStateMap,roomId, io, word,x){
+  
+    roomStateMap.get(roomId).roundState.startedAt=Date.now();
+    
+    if(roomStateMap.get(roomId).roundState.turnCount+1==socketIdMap.get(roomId).length){
+        clearInterval(x);
+        return;
+    }
+
+    syncRound(roomStateMap,roomId);
+
+    let array=[];
+    roomStateMap.get(roomId).playersMap.forEach((value,key)=>{
+        array.push({socketId:key, value:value})
+    })
+     
+    
+    let usersInfoArray=[...roomStateMap.get(roomId).playersMap];
+    // roomStateMap.get(roomId).playersMap.forEach((value,key)=>{
+    //   usersInfoArray.push(value)
+    // })
+
+
+
+    io.to(roomId).emit("usersInfo", usersInfoArray)
    
+
+    io.to(roomId).emit('clear-canvas', "hello"); 
+
+    if(roomStateMap.get(roomId).roundState.turnCount+1){
+        io.to(socketIdMap.get(roomId)[(roomStateMap.get(roomId).roundState.turnCount)]).emit('removeDrawer',"word");
+    }
+
+    // clear the canvas for all users
+
+    
+    io.to(socketIdMap.get(roomId)[++(roomStateMap.get(roomId).roundState.turnCount)]).emit('setDrawer', word);
+
+    let y=setInterval(()=>{      
+        io.to(roomId).emit('canvas-data', roomStateMap.get(roomId).roundState.canvasData)
+        roomStateMap.get(roomId).roundState.canvasData=[];
+      // I am sending the canvas data
+    },300)
+   
+ 
+
+  
+    setTimeout(()=>{
+        clearInterval(y);
+    },10000)
+
+// I have to change the score according to the time
+
+  
 }
 
 
-// sync round and end round are same
-// I have to run sync round after some time
 
-
-// function endRound(roomStateMap,roomId,io){
-//     let roomObj=roomStateMap.get(roomId);
-//     setTimeout(()=>{
-//         syncRound(roomObj.playersMap, roomObj.roundState.playersMap)
-//         newSocket.instance.to(roomId).emit('end-round' , "Round Ended")
-//         // sync after room ended 
-//         syncRound(roomStateMap, roomId)
-//         // Now the round is ended I will send the score
-//         let array=[];
-
-//         roomObj.playersMap((value)=>{
-//             // Key is socket id here
-//             //value is a object
-
-//             array.push({userName:value.userName, score:value.score})
-//         })
-      
-//         io.to(roomId).emit('scores', array)
-//         // this will send the score at the end of each round
-
-
-//         if(roundsLeft>0){
-//            startNewRound(roomStateMap,roomId,io)
-//         }
-        
-//       },roomObj.settings.timeLimit)
-// }
-
-
-
-
-module.exports={startNewRound, syncRound, emit}
+module.exports={startNewRound, syncRound, emit,increaseScore}

@@ -1,20 +1,31 @@
 
 const {startNewRound}=require("./Round")
+const { socketIdMap }=require("../services/state.js")
 
-function increaseScore(roomStateMap,roomId, socketId, score){
-    roomStateMap.get(roomId).playersMap.get(socketId).score+=score
-}
 
 // (roomStateMap,roomId, io, word)
 
-function startGame(roomObj,io,roomId){
+// <roomId, [socketIds]> this is socketIdMap
+
+function startGame(roomStateMap,io,roomId,word){
     io.to(roomId).emit('startState', true);
 
-      startNewRound(roomObj,roomId, io, 'kill');
-    // I have to do this thing of clearing interval
+    // I have to call the next game again and again
+    // 10S extra to choose the word
+    // if word Is not chosen first I will choose
+    
+   let x=setInterval(()=>{
+     startNewRound(roomStateMap,roomId, io, word,x);
+   }, 10000)
+
+    
+    // I will keep the count the number of players and who will be the drawer
+    // next
+
+   
 
 
 }
 
 
-module.exports={increaseScore,startGame}
+module.exports={startGame}

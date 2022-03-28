@@ -16,10 +16,12 @@ export default function Message() {
 //the Client;
 
    
-
+     
     socket.on("gm", (message)=>{
       setGroupMessage([...groupMessage, message])
     })
+     
+  
 
     
   return (

@@ -4,6 +4,10 @@ const httpServer = require("http").createServer(app);
 // I will run a timer in the frontend and 
 
 let send=true;
+
+
+
+// In socketIdMap <roomId, [ {socketId:,score: userName} ]
 // 
 // I will use the App.js as a controller
 
@@ -67,10 +71,10 @@ const Words=['king','fast','kill','mango','orange','apple','virat','delhi','mumb
 // player
 
 
-const {startNewRound, syncRound,emit,}=require("./models/Round")
+const {startNewRound, syncRound,emit,increaseScore}=require("./models/Round")
 const {checkWord}=require('./logic')
 const {roomStateMap,playerInfoClass, SettingsClass, RoomStateClass,joinRoom,createRoom,RoundStateClass,socketIdMap,addToSocketIdMap}=require("./services/state.js")
-const {increaseScore,startGame}=require('./models/Room')
+const {startGame}=require('./models/Room')
 
 // agar start nahi hua hai to waiting area me rehan 
 // hai agar start hua hai to game area me jana hai
@@ -82,6 +86,10 @@ const {increaseScore,startGame}=require('./models/Room')
 newSocket.instance.on("connection", (socket)=>{
   console.log('we have connected')
     socket.on("join-room" ,(roomId,userName)=>{
+     
+      // check the start state and then only update the
+      // userInfo state
+
       createJoinRoom(socket,roomId)
 
         // newSocket.instance.to(socket.id).emit("startState", roomStateMap.get(roomId))
@@ -89,7 +97,7 @@ newSocket.instance.on("connection", (socket)=>{
       // console.log(rooms,"This is in App.js")
     let array=Array.from(rooms.get(roomId));
     socketIdMap.set(roomId, array);
-    console.log(array)
+    // console.log(array)
 //    check first whehter the room exist or not
       if(roomStateMap.get(roomId)==undefined){
          createRoom(roomId, 2, 20000, false)
@@ -102,7 +110,7 @@ newSocket.instance.on("connection", (socket)=>{
       }
       
 
-   
+      
       // console.log(roomStateMap.get(roomId).roundState,"This is joining")
       newSocket.instance.to(socket.id).emit("startState", roomStateMap.get(roomId).startState)
       // newSocket.instance.to(socket.id).emit('startState', roomStateMap.get(roomId))
@@ -118,8 +126,8 @@ newSocket.instance.on("connection", (socket)=>{
 
       
 
-    //   sendUsers(id)      
-    newSocket.instance.to(roomId).emit("usersInfo", roomStateMap.get(roomId).playersMap)
+
+    // <id,{userName:"asdf",score:100}>
     // this will send the players map we can use that 
     // console.log(roomStateMap.get(roomId).playersMap)  
 
@@ -134,16 +142,13 @@ newSocket.instance.on("connection", (socket)=>{
         roomObj.settings.timeLimit=timeLimit;
         roomObj.startState=true
         // send a word to the user
-        startGame(roomObj,newSocket.instance,roomId);
-        newSocket.instance.to(socket.id).emit('wordToGuess' ,'kill')
+        startGame(roomStateMap, newSocket.instance, roomId, "kill");
+
+
+ 
         
         
-          setInterval(()=>{      
-              newSocket.instance.to(roomId).emit('canvas-data', roomObj.roundState.canvasData)
-              roomObj.roundState.canvasData=[];
-            // I am sending the canvas data
-          },2000)
-        
+   
         
     
 
@@ -166,12 +171,8 @@ newSocket.instance.on("connection", (socket)=>{
    
     socket.on("group-message", (roomId,message)=>{
        console.log(message,"This is guess")
-       console.log( roomStateMap.get(roomId).roundState.wordToGuess,"This is the word to guess")
-       if(checkWord(message, roomStateMap.get(roomId).roundState.wordToGuess)){
-         increaseScore(roomStateMap,roomId, socket.id, 100)
-         let playersMap=(roomStateMap.get(roomId).playersMap) 
-         console.log(`${playersMap.get(socket.id).userName} guessed correctly`)
-          
+       if(checkWord(message, 'kill')){
+         increaseScore(roomStateMap, roomId, socket.id, 100)  
        }
 
        else{
@@ -188,7 +189,6 @@ newSocket.instance.on("connection", (socket)=>{
     socket.on('canvas-data',(roomId,drawingType, startX, startY, endX, endY)=>{
       // I have to collect the data in the fashion such a way that I will store the 
       // data and send it after 60 seconds;
-      console.log(`[${startX}, ${startY}, ${endX},${endY}],`);
       let roomObj=roomStateMap.get(roomId);
       roomObj.roundState.canvasData.push([drawingType, startX, startY, endX, endY]);
       
@@ -248,3 +248,4 @@ httpServer.listen(4000,()=>{
 //     console.log(server)
 // })
 
+// clear all previous data in the canvas before starting the new ROund

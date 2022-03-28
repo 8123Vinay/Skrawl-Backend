@@ -39,11 +39,12 @@ class SettingsClass{
 
 
 class RoundStateClass{
-    constructor(wordToGuess,turnCount,canvasData){
+    constructor(wordToGuess,turnCount,canvasData,startedAt){
         this.playersMap=new Map();
         this.wordToGuess=wordToGuess;
         this.turnCount=turnCount;
         this.canvasData=canvasData;
+        this.startedAt=startedAt
     }
 }
 
@@ -75,7 +76,7 @@ class RoomStateClass{
 
 function createRoom(RoomId, rounds, timeLimit, startState){
     let setting1=new SettingsClass(rounds,timeLimit);
-    let round1=new RoundStateClass('apple',-1,[]);
+    let round1=new RoundStateClass('apple',-1, [], 1);
     // empty array to the canvas data;
     let Room1=new RoomStateClass(setting1,round1,startState)
     
@@ -85,12 +86,13 @@ function createRoom(RoomId, rounds, timeLimit, startState){
 
 function joinRoom(roomId, socketId,userName){
     let player1=new PlayerInfoClass(userName, 0);
+    let player2={...player1};
     let roomObj=roomStateMap.get(roomId);
     let playersMap=roomObj.playersMap;
     playersMap.set(socketId, player1);
     addToSocketIdMap()
     
-    roomObj.roundState.playersMap.set(socketId, player1)
+    roomObj.roundState.playersMap.set(socketId, player2);
 
 }
 
