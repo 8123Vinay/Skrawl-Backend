@@ -1,35 +1,47 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { gameContext } from '../App'
 export default function Users() {
-    const { socket } = useContext(gameContext)
-    const [usersInfo, setUsersInfo]=useState([]);
-    const baseUrl=`https://robohash.org/`
+    const { socket,usersInfo } = useContext(gameContext)
+    
 
-    let array=[]; 
-    socket.on("usersInfo", usersInfo => {
-      console.log(usersInfo,"This is from users page")
-      // setUsersInfo(usersInfo);
-  
-      array=usersInfo.map((user,i)=>{
-         return(
-           <div key={i}>
-              <img src={`https://robohash.org/${i}`} className="w-12 h-12" />
-             <p>{user.userName}:: {user.score}</p>
-           </div>
-        )
-       }
+   function displayUsers(usersInfo){
+      usersInfo.sort((a,b)=>{
+        return ((a[1].score-b[1].score))
+      })
+
+    let array=usersInfo.map((user,i)=>{
+      let colour="bg-slate-300";
+      if(i%2){
+        colour="bg-slate-200"
+      }
+       return(
+         <div key={i} className={`${colour} h-16`}>
+            <img src={`https://robohash.org/${i}`} className={` w-16 h-16 right-0 absolute`}/>
+            <p className="text-center ">#{i+1}  {user[1].userName}</p>
+            <p className="text-center ">Score:{user[1].score}</p>
+         </div>
       )
-      setUsersInfo(array);
+
      }
- 
+    
     )
+    return array;
+  }
+
+   
+
+    // socket.on('playerDisconnected',(userName)=>{
+    //     let array=usersInfo.filter((user)=>{
+    //       return user[1].userName!=userName;
+    //     })
+    //     setUsersInfo(array);
+    // }) 
 
 
  if(usersInfo.length){
   return (
-    <div>
-      <p>Hello this is usersInfo</p>
-       {usersInfo}
+    <div className="w-60 bg-slate-100 absolute">
+       {displayUsers(usersInfo)}
     </div>
   )
  }
@@ -37,8 +49,7 @@ export default function Users() {
  
  else{
    return(
-     <div>
-       <h1>Hello users</h1>
+     <div className="w-60 bg-slate-100">
      </div>
    )
  }

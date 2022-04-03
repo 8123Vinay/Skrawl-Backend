@@ -2,21 +2,31 @@
 const {startNewRound}=require("./Round")
 const { socketIdMap }=require("../services/state.js")
 
+function playerDisconnected(roomId,roomObj){
+  let userName=roomObj.playersMap.get(socket.id).userName;
+  roomObj.disconnectedSet.add(socket.id)
+  // I have to send 
+  
+  newSocket.instance.to(roomId).emit('playerDisconnected', userName);
+}
 
-// (roomStateMap,roomId, io, word)
+// (roomObj,roomId, io, word)
 
 // <roomId, [socketIds]> this is socketIdMap
 
-function startGame(roomStateMap,io,roomId,word){
+function startGame(roomObj,io,roomId){
     io.to(roomId).emit('startState', true);
 
     // I have to call the next game again and again
     // 10S extra to choose the word
     // if word Is not chosen first I will choose
     
-   let x=setInterval(()=>{
-     startNewRound(roomStateMap,roomId, io, word,x);
-   }, 10000)
+     startNewRound(roomObj,roomId,io);
+     let usersArray=[...roomObj.playersMap];
+     let timeLimit=roomObj.settings.timeLimit;
+     console.log(timeLimit,"this is timelimit")
+     io.to(roomId).emit("dataForGame", usersArray,timeLimit);
+
 
     
     // I will keep the count the number of players and who will be the drawer

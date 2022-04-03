@@ -7,16 +7,18 @@ import { gameContext } from '../App'
 
 
 
-export default function Canvas() {
+export default function Canvas({isDrawer, setIsDrawer}) {
   
 
   const {socket,roomId}=useContext(gameContext); 
-  const [isDrawer,setIsDrawer]=useState(false);
+ 
   const canvasRef=useRef(null);
   const [draw, setDraw]=useState(false);
   const [ctx,setCtx]=useState(null);
   const [start,setStart]=useState({x:0, y:0})
   const [drawingType,setDrawingType]=useState(0);
+  
+
 
  
 
@@ -28,48 +30,55 @@ export default function Canvas() {
     }
     
   }
-  socket.on('setDrawer',(word)=>
-  {
-    // console.log("We have got the wordToGuess Here")
-    
-      setIsDrawer(true);
 
-  })
+
+
+//  I will choose word and If I get it within 10Sec I will change other I will not change
+
 
   socket.on('removeDrawer',(word)=>{
-    // console.log('we have got remove drawer')
+    console.log('we have got remove drawer')
     setIsDrawer(false);
   })
 
-  socket.on('clear-canvas',()=>{
+  socket.on("usersInfo", usersInfo => {
     if(ctx){
       ctx.clearRect(0,0,600,400);
+      console.log('we have receieved clear Canvas')
     }
-    
-    console.log('we have clear Rectangle')
-  })
- 
+  }
+  )
+
+  // socket.on("maskedWord",(length)=>{
+  //   let word=""
+  //   for(let i=0;i<length;i++){
+  //     word+="_"
+  //   }
+  //   if(!isDrawer){
+  //     setWordToGuess(word);
+  //   }
+     
+  // })
  
 
  useEffect(()=>{
   const canvas=canvasRef.current;
   setCtx(canvas.getContext('2d'));
 
-  
-
 },[isDrawer])
 
 if(isDrawer){
-
-
     return (
-      <div id="canvas" className="absolute left-96 top-0" >
+      <div id="canvas" className="absolute left-96 top-10" >
+        {/* <WordPopUp socket={socket} words={words} roomId={roomId} setWords={setWords}/> */}
+        {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
         <div id="canvas-area" >
         <canvas ref={canvasRef} width="600" height="400" className="canvas-container border-4 border-red-600 "  onMouseMove={(e)=>{
             if(ctx && draw){
               if(drawingType==0){
                 ctx.strokeStyle='black';
               }
+
               else if(drawingType==1){
                 ctx.strokeStyle='white';
               }
@@ -81,11 +90,11 @@ if(isDrawer){
 
                ctx.beginPath();
 
-               emitData(drawingType, start.x, start.y, e.clientX-384, e.clientY);
+                emitData(drawingType, start.x, start.y, e.clientX-384, e.clientY-40);
     
                 ctx.moveTo(start.x, start.y);
     
-                ctx.lineTo(e.clientX-384, e.clientY);
+                ctx.lineTo(e.clientX-384, e.clientY-40);
     
                 ctx.stroke();
        
@@ -93,7 +102,7 @@ if(isDrawer){
               }
   
      
-              setStart({x:e.clientX-384, y:e.clientY})
+              setStart({x:e.clientX-384, y:e.clientY-40})
 
   
         }} onMouseDown={(e)=>{
@@ -135,6 +144,7 @@ else{
 
     if(socket){
       socket.on('canvas-data',(data)=>{
+        // console.log('canvas Data is receieved')
         if(ctx){
           ctx.lineWidth=10;
           ctx.lineCap="round";
@@ -170,7 +180,8 @@ else{
  
 }
     return(
-      <div className="absolute left-96 top-0">
+      <div className="absolute left-96 top-10">
+      {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
          <canvas ref={canvasRef} width="600" height="400" className="canvas-container border-4 border-red-600 " />
       </div>
     )

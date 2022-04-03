@@ -2,8 +2,8 @@ import React,{useState,useContext} from 'react'
 import {Link} from 'react-router-dom'
 import {gameContext} from '../App.js'
 export default function WaitingArea() {
-    const {socket,roomId}=useContext(gameContext);
-    const [timeLimit,setTimeLimit]=useState(50);
+    const {socket,roomId,timeLimit,setTimeLimit}=useContext(gameContext);
+    
     const [rounds,setRounds]=useState(2);
 
 function roundsOptions(){
@@ -16,8 +16,8 @@ function roundsOptions(){
 
 function timeLimitOptions(){
     let array=[]
-    for(let i=0;i<=100000;i+=1000){
-      array.push(<option value={i} key={i}>{i}</option>)
+    for(let i=20000;i<=120000;i+=10000){
+      array.push(<option value={i} key={i}>{i/1000}s</option>)
     }
     return array
 }
@@ -48,6 +48,7 @@ function timeLimitOptions(){
      <Link to="/game">
      <input type="submit" value="start" onClick={(e)=>{
        e.preventDefault()
+       console.log("Hello clicked")
        socket.emit('startGame', roomId, rounds, timeLimit);
 
      }} className="w-16 h-8 mt-8 cursor-pointer bg-blue-600 text-white rounded-lg"/>

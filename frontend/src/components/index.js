@@ -1,3 +1,5 @@
 export {default as Canvas} from './Canvas'
 export {default as Users} from './Users'
 export {default as Message} from './Message'
+export {default as Timer} from './Timer'
+export {default as WordPopUp} from './WordPopUp'

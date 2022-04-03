@@ -12,7 +12,7 @@ class GameSocket{
             origin:[
                 'http://localhost:3000'
             ]
-         }
+         },
         }
       )
     }
@@ -26,7 +26,7 @@ class GameSocket{
 
 function createJoinRoom(socket, id){
    socket.join(id);
-   console.log("we have another player")
+   console.log("we have joined to the game")
 }
 
 
