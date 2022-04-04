@@ -17,9 +17,7 @@ class GameSocket{
       )
     }
 
-    getValue(){
-        return this.instance;
-    }
+    
 }
 //this is the functionality of creating a gameSocekt connectio
 //and now i have to create a room 

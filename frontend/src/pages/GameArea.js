@@ -5,27 +5,45 @@ export default function GameArea() {
   const { socket, roomId, } = useContext(gameContext)
   const [words, setWords]=useState([]);
   const [isDrawer,setIsDrawer]=useState(false);
- 
+  const [choosingWord,setChoosingWord]=useState(false);
+  const [drawerUserName,setDrawerUserName]=useState('')
 // a prticular player is choosing the word and I have to do popUp in there 
 
-  socket.on('setDrawer',(wordArray)=>
+  socket.on('setDrawer', (wordArray,drawerId,drawerUserName)=>
   {
-      setIsDrawer(true);
-      setWords(wordArray);
-      setTimeout(()=>{
-         setWords([]);
-      },5000)
+ 
+    console.log('we have setDrawer message')
+     if(socket.id===drawerId){
+       setIsDrawer(true);
+       setWords(wordArray);
+       
+       
+     }
+     setChoosingWord(true);
+     setDrawerUserName(drawerUserName);
       
+     setTimeout(()=>{
+      setWords([]);
+      setChoosingWord(false);
+    },5000)
 
- })
+
+})
+
+socket.on('removeDrawer',(word)=>{
+  console.log('we have got remove drawer')
+  setIsDrawer(false);
+})
+
+// 
 
   return (
     <div className="h-full w-full" >
-    <WordPopUp words={words} socket= {socket} roomId={roomId} setWords={setWords } />
+    <WordPopUp words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} />
       <Timer />
       <Message />
       <Users />
-      <Canvas isDrawer={isDrawer} setIsDrawer={setIsDrawer}/>
+      <Canvas isDrawer={isDrawer} />
     </div>
   )
 }

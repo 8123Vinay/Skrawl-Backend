@@ -36,10 +36,7 @@ export default function Canvas({isDrawer, setIsDrawer}) {
 //  I will choose word and If I get it within 10Sec I will change other I will not change
 
 
-  socket.on('removeDrawer',(word)=>{
-    console.log('we have got remove drawer')
-    setIsDrawer(false);
-  })
+
 
   socket.on("usersInfo", usersInfo => {
     if(ctx){

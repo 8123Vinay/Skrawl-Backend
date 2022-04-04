@@ -6,7 +6,7 @@ export default function Users() {
 
    function displayUsers(usersInfo){
       usersInfo.sort((a,b)=>{
-        return ((a[1].score-b[1].score))
+        return ((b[1].score-a[1].score))
       })
 
     let array=usersInfo.map((user,i)=>{
@@ -17,7 +17,7 @@ export default function Users() {
        return(
          <div key={i} className={`${colour} h-16`}>
             <img src={`https://robohash.org/${i}`} className={` w-16 h-16 right-0 absolute`}/>
-            <p className="text-center ">#{i+1}  {user[1].userName}</p>
+            <p className="text-center ">#{i+1}  {user[1].userName}{user[0]==socket.id ? "(You)" : " "}</p>
             <p className="text-center ">Score:{user[1].score}</p>
          </div>
       )

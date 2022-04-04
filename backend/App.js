@@ -12,6 +12,17 @@ const httpServer = require("http").createServer(app);
 // In socketIdMap <roomId, [ {socketId:,score: userName} ]
 // 
 // I will use the App.js as a controller
+app.use((req,res,next)=>{
+  res.setHeader("Access-Control-Allow-Origin" ,"*")
+  res.setHeader("Access-Control-Allow-Methods","GET");
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  next();
+})
+
+app.get("/", (req,res)=>{
+  console.log('we have a new Get request');
+  res.json("Hello user How are you this is checking the get request")
+})
 
 const { GameSocket, createJoinRoom } = require("./services/game_socket");
 let newSocket = new GameSocket();
@@ -72,7 +83,7 @@ const sids = newSocket.instance.of("/").adapter.sids;
 // player
 
 
-const { startNewRound, handleMessage, startTimeOut,wordChosen } = require("./models/Round")
+const { startNewRound, handleMessage, startTimeOut, wordChosen } = require("./models/Round")
 const { roomStateMap, joinRoom, createRoom, socketIdMap, } = require("./services/state.js")
 const { startGame } = require('./models/Room')
 
@@ -84,11 +95,9 @@ const { startGame } = require('./models/Room')
 // and i will use the model to functions to update my room state
 
 newSocket.instance.on("connection", (socket) => {
-  console.log('we have a connection')
 
   socket.on("join-room", (roomId, userName) => {
-    console.log(roomId, userName)
-
+    console.log('new we have ', userName,roomId);
     // check the start state and then only update the
     // userInfo state
 
@@ -111,10 +120,17 @@ newSocket.instance.on("connection", (socket) => {
 
     }
 
-
+    
 
     // console.log(roomStateMap.get(roomId).roundState,"This is joining")
-    newSocket.instance.to(socket.id).emit("startState", roomStateMap.get(roomId).startState)
+    let roomObj=roomStateMap.get(roomId);
+    newSocket.instance.to(roomId).emit("joiningData", roomObj.startState, [...roomObj.playersMap]);
+    
+    if(roomObj.playersMap.size==1){
+       newSocket.instance.to(socket.id).emit('roomCreator',"one")
+    }
+    // when ever a player Joins I will send him the data
+    // also I have to emit the 
     // newSocket.instance.to(socket.id).emit('startState', roomStateMap.get(roomId))
 
 
@@ -124,14 +140,7 @@ newSocket.instance.on("connection", (socket) => {
     //   when he sends the message I have to check whether the 
     // letter is the letter that is guessed 
     // services and actions
-
-
-
-
-
-
-
-  })
+})
   // run a loop for the round time for each players
 
   socket.on('startGame', (roomId, rounds, timeLimit) => {
@@ -145,17 +154,7 @@ newSocket.instance.on("connection", (socket) => {
     startGame(roomObj, newSocket.instance, roomId);
 
 
-
-
-
-
-
-
-
-
-    // I have emitted the start state
-    // I have to send something that game has started
-  })
+})
 
 
   // when we get to start the new round I have to call a function

@@ -110,8 +110,6 @@ function endRound(roomObj, roomId, io) {
     roomObj.roundState.playersMap.get(drawerId).score=drawerScore;
 
     syncRound(roomObj, roomId);
-
-
   
   
     io.to(socketIdMap.get(roomId)[(roomObj.roundState.turnCount - 1)]).emit('removeDrawer', "word");
@@ -127,7 +125,7 @@ function endRound(roomObj, roomId, io) {
 
     
 
-    io.to(roomId).emit('dataForGame', usersInfoArray, roomObj.settings.timeLimit);
+    io.to(roomId).emit('updatedScore', usersInfoArray);
     console.log(usersInfoArray, "THis is usersInfo Array")
 
 
@@ -141,8 +139,11 @@ function endRound(roomObj, roomId, io) {
 
 
 function startNewRound(roomObj, roomId, io) {
-    // send all the players data in the starting
+    if (roomObj.roundState.turnCount == roomObj.playersMap.size) {
+        roomObj.roundState.turnCount = 0;
+    }
 
+   
     let wordSet = new Set();
     //    console.log('we have started new round')
 
@@ -163,18 +164,21 @@ function startNewRound(roomObj, roomId, io) {
         roomObj.roundState.turnCount++;
     }
 
-    if (roomObj.roundState.turnCount == roomObj.playersMap.size) {
-        roomObj.roundState.turnCount = 0;
-    }
-
+ 
+    
     roomObj.roundState.drawerId=socketIdMap.get(roomId)[turnCount]
+    
+    
+    let drawerId=roomObj.roundState.drawerId;
 
-    io.to(socketArray[roomObj.roundState.turnCount++]).emit('setDrawer', wordArray);
+    let drawerUserName=roomObj.playersMap.get(drawerId).userName
+    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName);
+    roomObj.roundState.turnCount++;
     
 
     // io.to(roomId).emit('maskedWord', word.length);
 
-    // I will have a timeOut to start the game before the 10 seconds;
+    // I will have a timeOut to start the game before the 10 seconds;setDrawer
     
     
 

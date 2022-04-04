@@ -15,17 +15,18 @@ function playerDisconnected(roomId,roomObj){
 // <roomId, [socketIds]> this is socketIdMap
 
 function startGame(roomObj,io,roomId){
-    io.to(roomId).emit('startState', true);
+    // io.to(roomId).emit('startState', true);
 
     // I have to call the next game again and again
     // 10S extra to choose the word
     // if word Is not chosen first I will choose
     
-     startNewRound(roomObj,roomId,io);
+     
      let usersArray=[...roomObj.playersMap];
      let timeLimit=roomObj.settings.timeLimit;
-     console.log(timeLimit,"this is timelimit")
-     io.to(roomId).emit("dataForGame", usersArray,timeLimit);
+
+     io.to(roomId).emit("initialData", usersArray, timeLimit, roomObj.startState);
+     startNewRound(roomObj,roomId,io);
 
 
     
