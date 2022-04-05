@@ -39,15 +39,17 @@ class SettingsClass{
 
 
 class RoundStateClass{
-    constructor(wordToGuess,turnCount,canvasData,startedAt,messageArray){
+    constructor(wordToGuess,turnCount,startedAt,messageArray){
         this.playersMap=new Map();
         this.wordToGuess=wordToGuess;
         this.turnCount=turnCount;
-        this.canvasData=canvasData;
+        this.roundCanvasData=[];
         this.startedAt=startedAt
         this.messageArray=messageArray;
         this.drawerId=undefined;
         this.numberOfPlayersGuessed=0;
+        this.chooSingWord=false;
+        this.lastCanvasData=[];
     }
 }
 
@@ -61,6 +63,7 @@ class RoomStateClass{
         this.startState=startState
         this.disconnectedSet=new Map();
         this.roundsPlayed=0;
+        
        
     }
 }
@@ -81,7 +84,7 @@ class RoomStateClass{
 
 function createRoom(RoomId, rounds, timeLimit, startState){
     let setting1=new SettingsClass(rounds,timeLimit);
-    let round1=new RoundStateClass('apple',0, [], 1,[]);
+    let round1=new RoundStateClass('apple',0, 1,[]);
     // empty array to the canvas data;
     let Room1=new RoomStateClass(setting1,round1,startState)
     

@@ -97,15 +97,17 @@ const { startGame } = require('./models/Room')
 newSocket.instance.on("connection", (socket) => {
 
   socket.on("join-room", (roomId, userName) => {
-    console.log('new we have ', userName,roomId);
+    
+
     // check the start state and then only update the
     // userInfo state
 
-    createJoinRoom(socket, roomId)
+    // check the status of the room
+    
+    createJoinRoom(socket, roomId)    // this is to the socket.io joining room
+  
 
-    // newSocket.instance.to(socket.id).emit("startState", roomStateMap.get(roomId))
-    //  anything adding data to the roomObj will be done in models
-    // console.log(rooms,"This is in App.js")
+    
     let array = Array.from(rooms.get(roomId));
     socketIdMap.set(roomId, array);
     // console.log(array)
@@ -124,7 +126,36 @@ newSocket.instance.on("connection", (socket) => {
 
     // console.log(roomStateMap.get(roomId).roundState,"This is joining")
     let roomObj=roomStateMap.get(roomId);
-    newSocket.instance.to(roomId).emit("joiningData", roomObj.startState, [...roomObj.playersMap]);
+    if(!(roomStateMap.get(roomId).startState)){
+      newSocket.instance.to(roomId).emit("joinBefore",false, [...roomObj.playersMap]);
+    }
+    else{
+      newSocket.instance.to(roomId).emit("joinBefore", true, [...roomObj.playersMap]);
+      let drawerId=roomObj.roundState.drawerId;
+      let drawerUserName=roomObj.playersMap.get(drawerId).userName;
+      if(roomObj.roundState.choosingWord){
+        setTimeout(()=>{
+          newSocket.instance.to(socket.id).emit("joinedWhileChoosingWord", drawerUserName, roomObj.settings.timeLimit, [...roomObj.playersMap])
+        },500)
+       
+      }
+      else{
+        setTimeout(()=>{
+          newSocket.instance.to(socket.id).emit('canvas-data',roomObj.roundState.roundCanvasData);
+          newSocket.instance.to(socket.id).emit("joinedInBetween", roomObj.settings.timeLimit);
+
+          setTimeout(()=>{
+            newSocket.instance.to(socket.id).emit('startTimer', roomObj.roundState.startedAt)
+          },1000)
+        },1000)
+        
+
+      }
+     
+     
+      
+    }
+   
     
     if(roomObj.playersMap.size==1){
        newSocket.instance.to(socket.id).emit('roomCreator',"one")
@@ -143,7 +174,7 @@ newSocket.instance.on("connection", (socket) => {
 })
   // run a loop for the round time for each players
 
-  socket.on('startGame', (roomId, rounds, timeLimit) => {
+socket.on('startGame', (roomId, rounds, timeLimit) => {
     let roomObj = roomStateMap.get(roomId)
 
     roomObj.settings.rounds = rounds;
@@ -190,7 +221,8 @@ newSocket.instance.on("connection", (socket) => {
     // I have to collect the data in the fashion such a way that I will store the 
     // data and send it after 60 seconds;
     let roomObj = roomStateMap.get(roomId);
-    roomObj.roundState.canvasData.push([drawingType, startX, startY, endX, endY]);
+    roomObj.roundState.lastCanvasData.push([drawingType, startX, startY, endX, endY]);
+    roomObj.roundsCanvasData.push([drawingType, startX, startY, endX, endY]);
    
 
 

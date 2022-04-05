@@ -5,7 +5,7 @@ let startTimeOut = null;
 function handleMessage(message, roomObj, socketId, roomId, io) {
     let wordToGuess = roomObj.roundState.wordToGuess;
     let userName = roomObj.playersMap.get(socketId).userName;
-    let drawerId=roomObj.roundState.drawerId
+    let drawerId = roomObj.roundState.drawerId
 
 
 
@@ -13,8 +13,8 @@ function handleMessage(message, roomObj, socketId, roomId, io) {
     // not allowed to type anything while he is drawing
 
 
-    if (socketId!=drawerId && checkWord(message, wordToGuess)) {
-        increaseScore(roomObj,socketId)
+    if (socketId != drawerId && checkWord(message, wordToGuess)) {
+        increaseScore(roomObj, socketId)
         messageArray.push({ userName, message: 'Guessed Correctly' });
         roomObj.roundState.numberOfPlayersGuessed++;
     }
@@ -45,7 +45,7 @@ const Words = ['king', 'fast', 'kill', 'mango', 'orange', 'apple', 'virat', 'del
 function increaseScore(roomObj, socketId) {
     if (!roomObj.roundState.playersMap.get(socketId).score) {
         let score = 1000 - (0.03) * (Date.now() - roomObj.roundState.startedAt)
-        roomObj.roundState.playersMap.get(socketId).score=score;
+        roomObj.roundState.playersMap.get(socketId).score = score;
         console.log(roomObj.playersMap)
     }
 
@@ -83,12 +83,12 @@ function endRound(roomObj, roomId, io) {
 
     let disconnectedSet = roomObj.disconnectedSet;
     let usersInfoArray = [...roomObj.playersMap];
-   
+
     // get the total active players from the array 
     // I should not 
-    
 
- 
+
+
     if (disconnectedSet.size) {
 
         let filteredArray = usersInfoArray.filter((user) => {
@@ -97,33 +97,33 @@ function endRound(roomObj, roomId, io) {
         usersInfoArray = filteredArray;
     }
 
-    let activePlayers=roomObj.playersMap.size-disconnectedSet.size;
-    let numberOfPlayersGuessed=roomObj.roundState.numberOfPlayersGuessed;
-    let drawerId=roomObj.roundState.drawerId;
+    let activePlayers = roomObj.playersMap.size - disconnectedSet.size;
+    let numberOfPlayersGuessed = roomObj.roundState.numberOfPlayersGuessed;
+    let drawerId = roomObj.roundState.drawerId;
 
 
-    let drawerScore=(1000/(activePlayers-1))*(numberOfPlayersGuessed);
-    console.log('drawerSocre', drawerScore)
+    let drawerScore = (1000 / (activePlayers - 1)) * (numberOfPlayersGuessed);
+
     console.log('drawerUserName', roomObj.playersMap.get(drawerId).userName)
 
     // increase the score of the drawer after some time
-    roomObj.roundState.playersMap.get(drawerId).score=drawerScore;
+    roomObj.roundState.playersMap.get(drawerId).score = drawerScore;
 
     syncRound(roomObj, roomId);
-  
-  
+
+
     io.to(socketIdMap.get(roomId)[(roomObj.roundState.turnCount - 1)]).emit('removeDrawer', "word");
-   
+
+    roomObj.roundState.roundCanvasData=[];
 
 
-   
 
 
 
     // update the score for the drawer
-   
 
-    
+
+
 
     io.to(roomId).emit('updatedScore', usersInfoArray);
     console.log(usersInfoArray, "THis is usersInfo Array")
@@ -143,7 +143,7 @@ function startNewRound(roomObj, roomId, io) {
         roomObj.roundState.turnCount = 0;
     }
 
-   
+
     let wordSet = new Set();
     //    console.log('we have started new round')
 
@@ -158,56 +158,58 @@ function startNewRound(roomObj, roomId, io) {
 
     let socketArray = socketIdMap.get(roomId);
     let disconnectedSet = roomObj.disconnectedSet;
-    let turnCount=roomObj.roundState.turnCount;
+    let turnCount = roomObj.roundState.turnCount;
 
     while (disconnectedSet.has(socketArray[roomObj.roundState.turnCount])) {
         roomObj.roundState.turnCount++;
     }
 
- 
-    
-    roomObj.roundState.drawerId=socketIdMap.get(roomId)[turnCount]
-    
-    
-    let drawerId=roomObj.roundState.drawerId;
 
-    let drawerUserName=roomObj.playersMap.get(drawerId).userName
-    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName);
+
+    roomObj.roundState.drawerId = socketIdMap.get(roomId)[turnCount]
+
+
+    let drawerId = roomObj.roundState.drawerId;
+
+    let drawerUserName = roomObj.playersMap.get(drawerId).userName
+    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName,roomObj.settings.timeLimit);
     roomObj.roundState.turnCount++;
-    
+
 
     // io.to(roomId).emit('maskedWord', word.length);
 
     // I will have a timeOut to start the game before the 10 seconds;setDrawer
-    
-    
 
+
+    roomObj.roundState.chooSingWord=true;
     startTimeOut = setTimeout(() => {
         roomObj.roundState.startedAt = Date.now();
         roomObj.roundState.wordToGuess = 'virat';
-        io.to(roomId).emit('startTimer', roomObj.settings.timeLimit)
+        io.to(roomId).emit('startRound', roomObj.settings.timeLimit);
+        io.to(roomId).emit('startTimer', undefined);
+        // do something now
         setTimeout(() => {
-            endRound(roomObj,roomId,io)
+           endRound(roomObj, roomId, io)
         }, roomObj.settings.timeLimit)
-        console.log('we are in timeOut')
-       
+        console.log('we are in timeOut');
+        roomObj.roundState.chooSingWord=false;
+
     }, 5000)
 
-   
-    
+
+
+
 
 
     let canvasInterval = setInterval(() => {
-        io.to(roomId).emit('canvas-data', roomObj.roundState.canvasData);
-        roomObj.roundState.canvasData = [];
+        io.to(roomId).emit('canvas-data', roomObj.roundState.roundCanvasData);
+        roomObj.roundState.lastCanvasData = [];
         // I am sending the canvas data
     }, 300)
 
     setTimeout(() => {
         clearInterval(canvasInterval)
     }, roomObj.settings.timeLimit)
-
-
 
 }
 

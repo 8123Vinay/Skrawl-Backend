@@ -53,10 +53,10 @@ export default function App() {
  },[])
 
  if(socket){
-  socket.on('joiningData',(state,usersInfo)=>{
-        setStartState(state);
-        setUsersInfo(usersInfo)
-
+  socket.on('joinBefore', (startState,usersInfo)=>{
+    setStartState(startState);
+    setUsersInfo(usersInfo);
+// joining data is needed in the waiting area
 })
 
 socket.on('initialData', (usersInfo,timeLimit,startState)=>{
