@@ -80,7 +80,8 @@ socket.on('updatedScore', (usersInfo)=>{
 
 
   return (
-    <div className="h-full w-full z--1">
+    <div className="h-full w-full">
+    {/* <img src="pages/Images/logo.png" className="w-2/3 h-full" /> */}
       <BrowserRouter>
        <gameContext.Provider value={{socket,roomId,setRoomId,startState,setStartState,timeLimit,setTimeLimit,usersInfo,roomCreator,setHome}} >
         <Routes>

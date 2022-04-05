@@ -10,6 +10,11 @@ module.exports = {
         spacing: {
           'last': '97vw',
           '200px':'200px',
+          '350px':'350px',
+          '400px':'400px'
+        },
+        screens: {
+          'mine': '420px',
         }
   
       },
