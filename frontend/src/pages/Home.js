@@ -14,7 +14,7 @@ export default function Home() {
   const {id}=useParams();
   function displayAvatars(){
     let array=[];
-        for(let i=0;i<7;i++){
+        for(let i=0;i<10;i++){
           array.push(  
           <img src={`https://robohash.org/${i}`} className={` w-20 h-20  `} alt="this is avatar"/>
                     )
@@ -62,33 +62,39 @@ export default function Home() {
 
  
   return (
-    <div className="flex flex-col items-center justify-start h-full top-12 left-0 w-full border-8 border-slate-500 gap-2">
-      <img src="Images/logo.png" className="w-[400px]" />
-     <div className="flex justify-center flex-wrap w-full  ">
+    <div className="flex flex-col items-center justify-start h-full top-12 left-0 w-full gap-2 border-4 border-red-600">
+    <img src="Images/logo.png" className="w-[500px] max-h-28 " />
+     <div className="flex justify-center flex-wrap w-full ">
        {displayAvatars()}
      </div>
-     <div className="mt-12 flex flex-wrap w-[300px] relative h-1/3 border-4 border-slate-500 rounded-xl ">
+
+     {/* <div className="mt-12 flex flex-wrap w-[600px] relative h-1/3 border-4 border-slate-500 rounded-xl "> */}
+     <form className="border-4 border-slate-600 flex flex-wrap gap-y-16 gap-x-0 p-4 rounded-xl mt-4">
       <input type="text" placeholder="username" value={userName} onChange={(e) => {
         setUserName(e.target.value)
-      }} className="border-2 pl-2 border-slate-600 w-full h-12  m-4 rounded-xl" />
+
+      }} className="border-2 pl-2 border-slate-600 w-full h-12  rounded-xl border-box " />
      
 
-      <button className="text-white bg-blue-600 rounded-lg w-full h-12 m-4" onClick={() => {
+      <input type='submit' className="text-white bg-blue-600 rounded-lg w-full h-12 " onClick={(e) => {
+        e.preventDefault()
         randomString();
         setTimeout(()=>{
           setHome(false)
         },1000)
         
-      }}>Create Private Room</button>
+      }} value="Create Private Room"/>
 
-      <button className="text-white bg-green-600 rounded-lg  w-full h-12 m-4" onClick={() => {
+      <input type="submit" className="text-white bg-green-600 rounded-lg w-full h-12 " onClick={(e) => {
+        e.preventDefault()
         setRoomId(id);
         setTimeout(()=>{
           setHome(false)
-        },1000)
-      }}>Play</button>
+        },200)
+      }} value="Play"/>
+     </form>
       
-    </div>
+    {/* </div> */}
     </div>
 
   )

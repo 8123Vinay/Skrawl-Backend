@@ -45,11 +45,10 @@ class RoundStateClass{
         this.turnCount=turnCount;
         this.roundCanvasData=[];
         this.startedAt=startedAt
-        this.messageArray=messageArray;
         this.drawerId=undefined;
-        this.numberOfPlayersGuessed=0;
         this.chooSingWord=false;
         this.lastCanvasData=[];
+        this.guessedArray=[];
     }
 }
 
@@ -61,7 +60,6 @@ class RoomStateClass{
         this.playersMap=new Map()
         this.roundState=roundState
         this.startState=startState
-        this.disconnectedSet=new Map();
         this.roundsPlayed=0;
         
        

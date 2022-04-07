@@ -25,7 +25,7 @@ export default function Timer() {
 
   
   return (
-    <div className="text-4xl absolute left-1/5 top-0 w-4/5 bg-slate-300 text-center">
+    <div className="text-4xl w-full bg-slate-600 pl-4">
         {timer}  
     </div>
   )

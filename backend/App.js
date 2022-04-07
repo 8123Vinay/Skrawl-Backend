@@ -1,6 +1,8 @@
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 
+// I will have a map of socketId and roomId map 
+// which will be unique
 
 // I will run a timer in the frontend and 
 
@@ -87,6 +89,9 @@ const { startNewRound, handleMessage, startTimeOut, wordChosen } = require("./mo
 const { roomStateMap, joinRoom, createRoom, socketIdMap, } = require("./services/state.js")
 const { startGame } = require('./models/Room')
 
+const socketRoomMap=new Map;
+
+// socket=>roomId;
 // agar start nahi hua hai to waiting area me rehan 
 // hai agar start hua hai to game area me jana hai
 
@@ -104,8 +109,9 @@ newSocket.instance.on("connection", (socket) => {
 
     // check the status of the room
     
-    createJoinRoom(socket, roomId)    // this is to the socket.io joining room
-  
+    createJoinRoom(socket, roomId)
+        // this is to the socket.io joining room
+    socketRoomMap.set(socket.id, roomId);
 
     
     let array = Array.from(rooms.get(roomId));
@@ -183,6 +189,7 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
     roomObj.startState = true
     // send a word to the user
     startGame(roomObj, newSocket.instance, roomId);
+    console.log(rooms,"this is rooms")
 
 
 })
@@ -217,12 +224,13 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
 
 
 
-  socket.on('canvas-data', (roomId, drawingType, startX, startY, endX, endY) => {
+  socket.on('canvas-data', (roomId, drawingType, startX, startY, endX, endY,canvasSize) => {
     // I have to collect the data in the fashion such a way that I will store the 
     // data and send it after 60 seconds;
     let roomObj = roomStateMap.get(roomId);
-    roomObj.roundState.lastCanvasData.push([drawingType, startX, startY, endX, endY]);
-    roomObj.roundsCanvasData.push([drawingType, startX, startY, endX, endY]);
+    roomObj.roundState.lastCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
+    roomObj.roundState.roundCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
+    console.log(canvasSize,"this is canvasSizez") 
    
 
 
@@ -249,6 +257,27 @@ socket.on('chosenWord', (word, roomId) => {
     wordChosen(word,roomObj,newSocket.instance,roomId)
  
   })
+
+
+  socket.on("disconnect", () => {
+    console.log(socket.id,"user Disconnected");
+    
+    let roomId=socketRoomMap.get(socket.id);
+    let roomObj=roomStateMap.get(roomId);
+    socketRoomMap.delete(socket.id);
+    // I have to delete it in the playersMap and as well as In the roundplayersmap
+      
+
+    let userName=roomObj.playersMap.get(socket.id).userName;
+    newSocket.instance.to(roomId).emit('groupMessage',({userName:userName, message:'leftSpace',socketId:socket.id}));
+    
+    
+    roomObj.playersMap.delete(socket.id);
+    roomObj.roundState.playersMap.delete(socket.id);
+    newSocket.instance.to(roomId).emit('updatedScore', [...roomObj.playersMap]);
+   
+
+  });  
 
 
 })

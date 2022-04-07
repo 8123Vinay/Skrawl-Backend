@@ -1,24 +1,31 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { gameContext } from '../App'
 export default function Users() {
-    const { socket,usersInfo } = useContext(gameContext)
+    const { socket,usersInfo,guessedSet } = useContext(gameContext)
     
 
    function displayUsers(usersInfo){
-      usersInfo.sort((a,b)=>{
-        return ((b[1].score-a[1].score))
-      })
 
     let array=usersInfo.map((user,i)=>{
-      let colour="bg-slate-300";
+      let bgColour="bg-slate-300";
+
       if(i%2){
-        colour="bg-slate-200"
+        bgColour="bg-slate-200"
       }
+
+      if(guessedSet.has(user[0])){
+        bgColour="bg-green-500"
+      }
+
        return(
-         <div key={i} className={`${colour} h-16`}>
-            <img src={`https://robohash.org/${i}`} className={` w-16 h-16 right-0 absolute`}/>
-            <p className="text-center ">#{i+1}  {user[1].userName}{user[0]==socket.id ? "(You)" : " "}</p>
-            <p className="text-center ">Score:{user[1].score}</p>
+         <div key={i} className={`${bgColour} h-16 flex justify-between`}>  
+            { user[1].rank ? <p className="text-2xl pl-4">#{i+1}</p>: 0}
+            <div className="flex-flex-col items-center">
+            <p className="text-xl">{user[1].userName}</p>
+            <p className="text-xl">Score:{user[1].score}</p>
+            </div>
+           
+            <img src={`https://robohash.org/${i}`} className={` w-16 h-16 `} alt='this is avatar'/>
          </div>
       )
 
@@ -40,7 +47,7 @@ export default function Users() {
 
  if(usersInfo.length){
   return (
-    <div className="w-60 bg-slate-100 absolute">
+    <div className="bg-slate-100 w-80">
        {displayUsers(usersInfo)}
     </div>
   )
@@ -49,7 +56,7 @@ export default function Users() {
  
  else{
    return(
-     <div className="w-60 bg-slate-100">
+     <div className=" bg-slate-100">
      </div>
    )
  }

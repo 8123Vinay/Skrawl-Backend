@@ -3,20 +3,24 @@ import { gameContext } from '../App'
 
 
 export default function Message() {
-    const { socket,roomId} = useContext(gameContext)
-    const[message,setMessage]=useState("")
-    const[groupMessage,setGroupMessage]=useState([])
+    const { socket,roomId, guessedSet, setGuessedSet} = useContext(gameContext)
+    const[message,setMessage]=useState("");
+    const[groupMessageArray,setGroupMessageArray]=useState([])
 
 
  
-     let displayMessages=groupMessage.map((x,i)=>{
-        let colour="bg-slate-300";
+     let displayMessages=groupMessageArray.map((x,i)=>{
+        let bgColour="bg-slate-300";
+        let textColor='text-black';
+        if(x.message==='Guessed Correctly'){
+            textColor='text-green-600'
+        }
         if(i%2){
-          colour="bg-slate-200"
+          bgColour="bg-slate-200"
         }
           return(
-            <div key={i} className={`${colour}`}>
-            <p className="ml-4">{x.userName}::{x.message}</p>
+            <div key={i} className={`${bgColour}`}>
+            <p className={`ml-4 ${textColor} font-semibold`}>{x.userName}::{x.message}</p>
             </div>
           )
       })
@@ -27,20 +31,25 @@ export default function Message() {
 
     // alternate colors
 
-    socket.on("guessedWord", (messageArray)=>{
-        let array=[];
+    socket.on("groupMessage", (messageObj, guessedArray)=>{
 
-        for(let i=Math.max(messageArray.length-10,0); i<messageArray.length;i++){
-          array.push(messageArray[i]);
-        }
-        setGroupMessage(array);
+       if(groupMessageArray.length===10){
+         groupMessageArray.splice(0,1);
+       }
+       setGroupMessageArray([...groupMessageArray, messageObj])
+      
+       if(messageObj.message=='Guessed Correctly'){
+          setGuessedSet(new Set(guessedArray));
+          console.log(guessedArray,"THis is guessedSet from the server");
+       }
+     
     })
      
 
 
     
   return (
-    <div className="absolute right-0 top-0 w-96 bg-slate-100 text-black h-full">
+    <div className="border-4 border-slate-600 text-black min-w-[320px] h-[500px]">
      <div className="absolute right-20 bottom-10 flex flex-wrap">
       {/* I will have to make the send message in the game area */}
       <input type="text" placeholder="type message"  value={message} onChange={(e)=>{

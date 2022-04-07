@@ -8,6 +8,9 @@ import {Home,GameArea,WaitingArea} from './pages'
 
 export const gameContext=createContext(null)
 
+
+
+
 export default function App() {
   const [roomId,setRoomId]=useState("");
   const [socket,setSocket]=useState(null);
@@ -16,6 +19,8 @@ export default function App() {
   const [timeLimit,setTimeLimit]=useState(20000);
   const [roomCreator,setRoomCreater]=useState(false);
   const [home,setHome]=useState(true);
+  const [guessedSet, setGuessedSet]=useState(new Set());
+
   // if true he will be in home page else He will be either in the game area or 
   // in the 
 
@@ -72,7 +77,10 @@ socket.on('roomCreator', (value)=>{
 
 socket.on('updatedScore', (usersInfo)=>{
   setUsersInfo(usersInfo);
+  let newSet=new Set();
+  setGuessedSet(newSet);
 })
+
 
 }
 
@@ -81,9 +89,12 @@ socket.on('updatedScore', (usersInfo)=>{
 
   return (
     <div className="h-full w-full">
+    <div className="flex flex-col items-center justify-start">
+   
+    </div>
     {/* <img src="pages/Images/logo.png" className="w-2/3 h-full" /> */}
       <BrowserRouter>
-       <gameContext.Provider value={{socket,roomId,setRoomId,startState,setStartState,timeLimit,setTimeLimit,usersInfo,roomCreator,setHome}} >
+       <gameContext.Provider value={{socket,roomId,setRoomId,startState,setStartState,timeLimit,setTimeLimit,usersInfo,roomCreator,setHome,setUsersInfo,guessedSet, setGuessedSet}} >
         <Routes>
           <Route path="/" element={getComponent()} />
           <Route path="/:id" element={getComponent()} />

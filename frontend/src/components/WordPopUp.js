@@ -18,7 +18,7 @@ export default function WordPopUp({ words, socket,roomId,setWords,choosingWord,d
                 return array;
             }
             return (
-                <div className="w-full h-full bg-grey-500 fixed">
+                <div className="w-full h-full bg-slate-600">
                     <div className="relative top-1/3 left-1/3 w-1/3 h-40 flex justify-between">
                         {displayWords()}
                     </div>
@@ -29,8 +29,8 @@ export default function WordPopUp({ words, socket,roomId,setWords,choosingWord,d
         else {
             console.log('we are in the word Choosing part here')
             return (
-                <div className="absolute w-full h-full -z-1 bg-gray-200">
-                    <h1 className="relative top-1/3 left-1/3 text-2xl">Now {drawerId} is Drawing</h1>
+                <div className="absolute w-full h-full -z-1 bg-slate-600">
+                    <h1 className="relative top-1/3 left-1/3 text-2xl">Now {drawerId} is ChoosingWord</h1>
                 </div>
             )
         }

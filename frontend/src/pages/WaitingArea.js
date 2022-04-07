@@ -9,8 +9,8 @@ export default function WaitingArea() {
     function displayUsers(usersInfo){
     let array=usersInfo.map((user,i)=>{
        return(
-        <div className="w-32 h-40 ">  
-            <img src={`https://robohash.org/${i}`} className={` w-32 h-32  `} alt="this is avatar"/>
+        <div className=" w-20 h-24 " key={i}>  
+            <img src={`https://robohash.org/${i}`} className=" w-20 h-20" alt="this is avatar" />
             <p className="text-center">{user[1].userName}{user[0]==socket.id ? "(You)" : " "}</p>
         </div>
       )
@@ -31,7 +31,7 @@ function roundsOptions(){
 
 function timeLimitOptions(){
     let array=[]
-    for(let i=20000;i<=120000;i+=10000){
+    for(let i=10000;i<=120000;i+=10000){
       array.push(<option value={i} key={i}>{i/1000}s</option>)
     }
     return array
@@ -43,8 +43,10 @@ console.log(x,"This is checking room Creator")
 
 
   return (
-    <div className={`absolute left-[200px] top-40 right-[200px] bg-gray-300 h-2/3 `}>
-     <form className={`text-center w-1/3 bg-blue-200 h-full ${cursor}`}>
+    <div className=' w-full flex flex-col justify-start items-center  h-full gap-12 border-4 border-red-600'>
+     <img src="Images/logo.png" className="w-[500px] max-h-28" />
+    <div className="flex border-4 border-red-600 fine:w-[700px] w-full h-80">
+     <form className={`text-center fine:w-[250px] bg-blue-200 h-full ${cursor}`}>
      <h1 className="text-2xl">Settings</h1>
          <p>Rounds:</p>
          <select name='rounds' className={`w-28 h-8 text-center mb-8 ${cursor}`} onChange={(e)=>{
@@ -68,13 +70,14 @@ console.log(x,"This is checking room Creator")
      }} className={`w-16 h-8 mt-8 ${cursor} bg-blue-600 text-white rounded-lg`} disabled={x} />
      </Link>
      </form>
-     <div className="absolute top-0 left-1/3 w-2/3">
-      <h1 className="text-3xl text-center">Players</h1>
-     <div className="flex justify-center flex-wrap " >
+       <div>
+     
+      <div className="flex justify-start flex-wrap " >
         {displayUsers(usersInfo)}
      </div>
      </div>
-     <h1 className="text-2xl p-2 bg-gray-600">{`http://localhost:3000/${roomId}`}</h1>
+     </div>
+     <h1 className="text-lg p-2 bg-gray-600 mine:text-2xl">{`http://localhost:3000/${roomId}`}</h1>
     </div>
   )
 
