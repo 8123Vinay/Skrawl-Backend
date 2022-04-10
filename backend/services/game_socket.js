@@ -24,7 +24,7 @@ class GameSocket{
 
 function createJoinRoom(socket, id){
    socket.join(id);
-   console.log("we have joined to the game")
+
 }
 
 

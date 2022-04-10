@@ -2,8 +2,7 @@ import React from 'react'
 
 export default function WordPopUp({ words, socket,roomId,setWords,choosingWord,drawerId }) {
    
-    console.log(choosingWord,"choosingWord")
-    console.log(words.length, 'wordsLength')
+
     if(choosingWord){
         if (words.length) {
             function displayWords() {
@@ -27,7 +26,7 @@ export default function WordPopUp({ words, socket,roomId,setWords,choosingWord,d
         }
     
         else {
-            console.log('we are in the word Choosing part here')
+
             return (
                 <div className="absolute w-full h-full -z-1 bg-slate-600">
                     <h1 className="relative top-1/3 left-1/3 text-2xl">Now {drawerId} is ChoosingWord</h1>

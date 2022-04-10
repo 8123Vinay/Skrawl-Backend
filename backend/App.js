@@ -22,7 +22,7 @@ app.use((req,res,next)=>{
 })
 
 app.get("/", (req,res)=>{
-  console.log('we have a new Get request');
+ 
   res.json("Hello user How are you this is checking the get request")
 })
 
@@ -114,8 +114,7 @@ newSocket.instance.on("connection", (socket) => {
     socketRoomMap.set(socket.id, roomId);
 
     
-    let array = Array.from(rooms.get(roomId));
-    socketIdMap.set(roomId, array);
+  
     // console.log(array)
     //    check first whehter the room exist or not
     if (roomStateMap.get(roomId) == undefined) {
@@ -123,6 +122,7 @@ newSocket.instance.on("connection", (socket) => {
       joinRoom(roomId, socket.id, userName)
 
     }
+
     else {
       joinRoom(roomId, socket.id, userName)
 
@@ -133,10 +133,16 @@ newSocket.instance.on("connection", (socket) => {
     // console.log(roomStateMap.get(roomId).roundState,"This is joining")
     let roomObj=roomStateMap.get(roomId);
     if(!(roomStateMap.get(roomId).startState)){
-      newSocket.instance.to(roomId).emit("joinBefore",false, [...roomObj.playersMap]);
+      newSocket.instance.to(roomId).emit("joinedBefore",false, [...roomObj.playersMap]);
+      // added to the socketIdMap array 
+      let array = Array.from(rooms.get(roomId));
+      socketIdMap.set(roomId, array);
     }
+    
     else{
-      newSocket.instance.to(roomId).emit("joinBefore", true, [...roomObj.playersMap]);
+      roomObj.joinedInBetween.push(socket.id);
+
+      newSocket.instance.to(roomId).emit("joinedBefore", true, [...roomObj.playersMap]);
       let drawerId=roomObj.roundState.drawerId;
       let drawerUserName=roomObj.playersMap.get(drawerId).userName;
       if(roomObj.roundState.choosingWord){
@@ -157,28 +163,14 @@ newSocket.instance.on("connection", (socket) => {
         
 
       }
-     
-     
-      
-    }
+}
    
     
     if(roomObj.playersMap.size==1){
        newSocket.instance.to(socket.id).emit('roomCreator',"one")
     }
-    // when ever a player Joins I will send him the data
-    // also I have to emit the 
-    // newSocket.instance.to(socket.id).emit('startState', roomStateMap.get(roomId))
 
-
-    //   console.log("This is RoundState", roomStateMap.get(roomId).roundState.playersMap)
-
-
-    //   when he sends the message I have to check whether the 
-    // letter is the letter that is guessed 
-    // services and actions
 })
-  // run a loop for the round time for each players
 
 socket.on('startGame', (roomId, rounds, timeLimit) => {
     let roomObj = roomStateMap.get(roomId)
@@ -189,34 +181,15 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
     roomObj.startState = true
     // send a word to the user
     startGame(roomObj, newSocket.instance, roomId);
-    console.log(rooms,"this is rooms")
 
 
 })
 
 
-  // when we get to start the new round I have to call a function
-
-  // I have to send the userName and the 
-
-
-
-  // socket.on("disconnect", () => {
-  //   let roomId = [...(sids.get(socket.id))][1];
-  //   let roomObj = roomStateMap.get(rooomId);
-
-  //   playerDisconnected(roomId, roomObj)
-
-
-  //   //  one roundWill be completed when all players have got the chance
-
-
-  // })
-
 
   socket.on("wordGuess", (roomId, message) => {
     let roomObj = roomStateMap.get(roomId)
-    console.log(message, "THis is message from the client")
+   
     handleMessage(message, roomObj, socket.id, roomId, newSocket.instance);
 
   })
@@ -230,12 +203,12 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
     let roomObj = roomStateMap.get(roomId);
     roomObj.roundState.lastCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
     roomObj.roundState.roundCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
-    console.log(canvasSize,"this is canvasSizez") 
+  
    
 
 
 
-    // console.log(roomId,drawingType, startX, startY, endX, endY)
+   
 
     // add the data to the round
     //run a timer of 100ms
@@ -260,7 +233,7 @@ socket.on('chosenWord', (word, roomId) => {
 
 
   socket.on("disconnect", () => {
-    console.log(socket.id,"user Disconnected");
+   
     
     let roomId=socketRoomMap.get(socket.id);
     let roomObj=roomStateMap.get(roomId);
@@ -273,9 +246,24 @@ socket.on('chosenWord', (word, roomId) => {
     
     
     roomObj.playersMap.delete(socket.id);
+
     roomObj.roundState.playersMap.delete(socket.id);
+
     newSocket.instance.to(roomId).emit('updatedScore', [...roomObj.playersMap]);
-   
+
+    // get the index of the socketIdMap
+    let array=socketIdMap.get(roomId);
+    let index=array.indexOf(socket.id);
+    // this is the index of the disconnected player in the socketIdMap
+    let turnCount=roomObj.roundState.turnCount;
+    
+    socketIdMap.get(roomId).slice(index,1); 
+
+    if(index!=-1){
+      if(index<turnCount){
+         roomObj.roundState.turnCount--;
+      }
+    }
 
   });  
 
@@ -286,11 +274,11 @@ socket.on('chosenWord', (word, roomId) => {
 
 
 
-httpServer.listen(5000, () => {
-  console.log("we are listening on 5000");
+httpServer.listen(8000, () => {
+  console.log("we are listening on 8000");
 });
 
 
-// I have to check number of users at each time
-// at any time there is only one user then we have to stop
-//the game
+// I will have a joined Between array where I will add it to that
+// and then I will sync that with turnCount part to make sure
+// that We have 

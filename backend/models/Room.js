@@ -22,10 +22,10 @@ function startGame(roomObj,io,roomId){
     // if word Is not chosen first I will choose
     
      
-     let usersArray=[...roomObj.playersMap];
+     let usersInfo=[...roomObj.playersMap];
      let timeLimit=roomObj.settings.timeLimit;
 
-     io.to(roomId).emit("initialData", usersArray, timeLimit, roomObj.startState);
+     io.to(roomId).emit("initialData", usersInfo, timeLimit, roomObj.startState);
      startNewRound(roomObj,roomId,io);
 
 

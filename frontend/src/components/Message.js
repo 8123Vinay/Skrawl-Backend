@@ -25,7 +25,7 @@ export default function Message() {
           )
       })
      
-    // console.log(groupMessage)
+
 
 
 
@@ -40,7 +40,7 @@ export default function Message() {
       
        if(messageObj.message=='Guessed Correctly'){
           setGuessedSet(new Set(guessedArray));
-          console.log(guessedArray,"THis is guessedSet from the server");
+        
        }
      
     })
@@ -49,7 +49,7 @@ export default function Message() {
 
     
   return (
-    <div className="border-4 border-slate-600 text-black min-w-[320px] h-[500px]">
+    <div className="border-4 border-slate-600 text-black min-w-[320px] h-[500px] bg-white">
      <div className="absolute right-20 bottom-10 flex flex-wrap">
       {/* I will have to make the send message in the game area */}
       <input type="text" placeholder="type message"  value={message} onChange={(e)=>{

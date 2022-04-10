@@ -13,7 +13,7 @@ function addToSocketIdMap(roomId,rooms){
 //    let array=Array.from(rooms.get(roomId))
 //    socketIdMap.set(roomId, array)
    
-//    console.log(rooms,"THis is rooms")
+//   
 }
 
 
@@ -60,9 +60,9 @@ class RoomStateClass{
         this.playersMap=new Map()
         this.roundState=roundState
         this.startState=startState
-        this.roundsPlayed=0;
+        this.roundsPlayed=1;
+        this.joinedInBetween=[];
         
-       
     }
 }
 

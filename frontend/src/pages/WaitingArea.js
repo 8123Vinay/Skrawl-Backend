@@ -4,14 +4,15 @@ import {gameContext} from '../App.js'
 export default function WaitingArea() {
     const {socket,roomId,timeLimit,setTimeLimit,usersInfo, roomCreator}=useContext(gameContext);
     
-    const [rounds,setRounds]=useState(2);
-
+    const [rounds,setRounds]=useState(1);
+    console.log(usersInfo,"this is usersInfo");
+    
     function displayUsers(usersInfo){
     let array=usersInfo.map((user,i)=>{
        return(
-        <div className=" w-20 h-24 " key={i}>  
+        <div className=" w-20 h-24 " key={user[0]}>  
             <img src={`https://robohash.org/${i}`} className=" w-20 h-20" alt="this is avatar" />
-            <p className="text-center">{user[1].userName}{user[0]==socket.id ? "(You)" : " "}</p>
+            <p className="text-center text-xl">{user[1].userName}{user[0]==socket.id ? "(You)" : " "}</p>
         </div>
       )
 
@@ -39,23 +40,23 @@ function timeLimitOptions(){
 
 let x=roomCreator ? false : true;
 let cursor=roomCreator ? 'cursor-pointer'  :  "cursor-not-allowed"
-console.log(x,"This is checking room Creator")
+
 
 
   return (
-    <div className=' w-full flex flex-col justify-start items-center  h-full gap-12 border-4 border-red-600'>
+    <div className=' w-full flex flex-col justify-start items-center  h-full gap-12 border-4 border-red-600 text-white'>
      <img src="Images/logo.png" className="w-[500px] max-h-28" />
     <div className="flex border-4 border-red-600 fine:w-[700px] w-full h-80">
-     <form className={`text-center fine:w-[250px] bg-blue-200 h-full ${cursor}`}>
+     <form className={`text-center fine:w-[250px] text-white h-full ${cursor} bg-gray-400`}>
      <h1 className="text-2xl">Settings</h1>
          <p>Rounds:</p>
-         <select name='rounds' className={`w-28 h-8 text-center mb-8 ${cursor}`} onChange={(e)=>{
+         <select name='rounds' className={`w-28 h-8 text-center mb-8 ${cursor} bg-gray-600`} onChange={(e)=>{
              setRounds(e.target.value)
          }} disabled= {x}>
            {roundsOptions()}
          </select>
          <p>Time Limit:</p>
-         <select name='timeLimit' className={`w-28 h-8 text-center mt-8 ${cursor}`} onChange={(e)=>{
+         <select name='timeLimit' className={`w-28 h-8 text-center mt-8 ${cursor} bg-gray-600`} onChange={(e)=>{
             setTimeLimit(e.target.value)
          }} disabled={x}>
            {timeLimitOptions()}
@@ -64,7 +65,6 @@ console.log(x,"This is checking room Creator")
      <Link to="/game">
      <input type="submit" value="start" onClick={(e)=>{
        e.preventDefault()
-       console.log("Hello clicked")
        socket.emit('startGame', roomId, rounds, timeLimit);
 
      }} className={`w-16 h-8 mt-8 ${cursor} bg-blue-600 text-white rounded-lg`} disabled={x} />

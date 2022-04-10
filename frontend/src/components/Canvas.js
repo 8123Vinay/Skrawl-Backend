@@ -41,7 +41,7 @@ export default function Canvas({isDrawer, setIsDrawer}) {
   socket.on("usersInfo", usersInfo => {
     if(ctx){
       ctx.clearRect(0,0,600,400);
-      console.log('we have receieved clear Canvas')
+      
     }
   }
   )
@@ -72,7 +72,7 @@ if(isDrawer){
         {/* <WordPopUp socket={socket} words={words} roomId={roomId} setWords={setWords}/> */}
         {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
         <div id="canvas-area" >
-        <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 "  onMouseMove={(e)=>{
+        <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 bg-white"  onMouseMove={(e)=>{
             if(ctx && draw){
               if(drawingType==0){
                 ctx.strokeStyle='black';
@@ -82,7 +82,7 @@ if(isDrawer){
                 ctx.strokeStyle='white';
               }
  
-              console.log('we are in mouseover here') 
+          
               ctx.lineWidth=10;
   
                ctx.lineCap="round"
@@ -106,32 +106,33 @@ if(isDrawer){
   
         }} onMouseDown={(e)=>{
           setDraw(true);
-          console.log('we are drawing')
+         
           
         }} onMouseUp={()=>{
           setDraw(false);
   
         }}/>
         </div>
-        <div id="tools">
+        <div id="tools " className="flex gap-2">
           <button onClick={()=>{
             setDrawingType(0)
-            console.log('pencil clicked')
-          }} className="w-12 h-8 bg-blue-600 text-white ">Pencil</button>
+          }} className="bg-blue-600 text-white text-6xl">✏️</button>
   
           <button onClick={()=>{
             setDrawingType(1)
-          }} className="w-12 h-8 bg-blue-600 text-white">Erasor</button>
+          }} className="bg-blue-600 text-white text-6xl w-20">
+            <div className="bg-white w-12 h-4 ml-4 -rotate-45"></div>
+          </button>
   
-          <button className=" w-12 h-8 bg-blue-600 text-white " onClick={()=>{
+          <button className=" bg-blue-600 text-white text-6xl" onClick={()=>{
             if(ctx){
-              // console.log(canvas.width, canvas.height,"This is clear canvas function")
+         
               ctx.clearRect(0, 0, canvasSize, canvasSize);
              
               emitData(2, 0, 0, canvasSize, canvasSize, canvasSize);
             }
   
-          }}>clear</button>
+          }}>🧹</button>
         </div>
       </div>
     )
@@ -141,10 +142,9 @@ if(isDrawer){
 
 else{
 
-
     if(socket){
       socket.on('canvas-data',(data)=>{
-        if(ctx){
+        if(ctx && (data[0])){
           let drawerCanvasSize=data[0][5];
           ctx.lineWidth=10;
           ctx.lineCap="round";
@@ -176,6 +176,7 @@ else{
 
           
      }
+    
   )
 
  
@@ -183,7 +184,7 @@ else{
     return(
       <div className="">
       {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
-         <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 " />
+         <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 bg-white" />
       </div>
     )
   }

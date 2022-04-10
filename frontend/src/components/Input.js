@@ -28,7 +28,6 @@ export default function Input() {
     })
 
     socket.on('send-rooms', (message)=>{
-      // console.log(message)
     }
       )
     }

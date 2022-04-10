@@ -6,19 +6,19 @@ function handleMessage(message, roomObj, socketId, roomId, io) {
     let wordToGuess = roomObj.roundState.wordToGuess;
     let userName = roomObj.playersMap.get(socketId).userName;
     let drawerId = roomObj.roundState.drawerId
-    console.log(drawerId, socketId);
 
-    if (socketId!= drawerId && checkWord(message, wordToGuess)) {
+
+    if (socketId != drawerId && checkWord(message, wordToGuess)) {
         increaseScore(roomObj, socketId);
         roomObj.roundState.guessedArray.push(socketId);
-        console.log(roomObj.roundState.guessedArray);
-        io.to(roomId).emit('groupMessage', ({userName, message: 'Guessed Correctly', socketId}),roomObj.roundState.guessedArray);
-        
+
+        io.to(roomId).emit('groupMessage', ({ userName, message: 'Guessed Correctly', socketId }), roomObj.roundState.guessedArray);
+
     }
     else {
-        io.to(roomId).emit('groupMessage', { userName, message: message, socketId})
+        io.to(roomId).emit('groupMessage', { userName, message: message, socketId })
     }
-    
+
 }
 
 function checkWord(word, wordToGuess) {
@@ -40,10 +40,10 @@ const Words = ['king', 'fast', 'kill', 'mango', 'orange', 'apple', 'virat', 'del
 ]
 
 function increaseScore(roomObj, socketId) {
-    if (!(roomObj.roundState.playersMap.get(socketId).score)){
+    if (!(roomObj.roundState.playersMap.get(socketId).score)) {
         let score = parseInt(1000 - (0.03) * (Date.now() - roomObj.roundState.startedAt))
         roomObj.roundState.playersMap.get(socketId).score = score;
-        console.log(roomObj.playersMap)
+
     }
 
 }
@@ -67,8 +67,7 @@ function syncRound(roomObj, roomId) {
         value.score = 0;
     })
 
-    // console.log("this is in the syncFunction",roomPlayersMap);
-    // sort the elements based on the score and give them rank;
+
 
 
 }
@@ -76,71 +75,84 @@ function syncRound(roomObj, roomId) {
 
 function endRound(roomObj, roomId, io) {
 
-    console.log('we have receieved End round Here')
 
-
-
-
-    let numberOfPlayersGuessed = roomObj.roundState.guessedArray.size;
+    let numberOfPlayersGuessed = roomObj.roundState.guessedArray.length;
     let drawerId = roomObj.roundState.drawerId;
 
 
-    let drawerScore = parseInt((1000 / (roomObj.playersMap.size - 1)) * (numberOfPlayersGuessed));
+    let drawerScore = parseInt((1000 / (roomObj.playersMap.size - 1)) * numberOfPlayersGuessed);
 
-    console.log('drawerUserName', roomObj.playersMap.get(drawerId).userName)
+
 
     // increase the score of the drawer after some time
-    roomObj.roundState.playersMap.get(drawerId).score = drawerScore;
+    (roomObj.roundState.playersMap.get(drawerId)).score = drawerScore;
 
-    syncRound(roomObj, roomId);
+
 
     // set It to zero
     io.to(socketIdMap.get(roomId)[(roomObj.roundState.turnCount - 1)]).emit('removeDrawer', "word");
 
-    roomObj.roundState.roundCanvasData=[];
-    
-    roomObj.roundState.guessedArray=[];
+    let roundInfo = [...roomObj.roundState.playersMap];
 
+    io.to(roomId).emit('roundScore', roundInfo, roomObj.roundState.wordToGuess);
 
-    // I have to send the rank of each player
-//    player Rank till now
-// get the player Score and get the rank
-    
-   let usersInfoArray=[...roomObj.playersMap];
+    roomObj.roundState.roundCanvasData = [];
 
-    usersInfoArray.sort((a,b)=>{
-        return(b[1].score-a[1].score);
+    syncRound(roomObj, roomId); 
+
+    let usersInfoArray = [...roomObj.playersMap];
+
+    usersInfoArray.sort((a, b) => {
+        return (b[1].score - a[1].score);
     })
-    
-    for(let i=0;i<usersInfoArray.length;i++){
-       let socketId=((usersInfoArray[i])[0]);
-    //    we got the socket Id of the ith rank player
-       (roomObj.playersMap.get(socketId)).rank=i+1;
-     
+
+    for (let i = 0; i < usersInfoArray.length; i++) {
+        let socketId = ((usersInfoArray[i])[0]);
+        //    we got the socket Id of the ith rank player
+        (roomObj.playersMap.get(socketId)).rank = i + 1;
+
     }
+   
+    if(roomObj.roundState.turnCount>=socketIdMap.get(roomId).length){
+        if(roomObj.settings.rounds==roomObj.roundsPlayed){
+            setTimeout(()=>{
+                io.to(roomId).emit('gameEnded', usersInfoArray);
+            },10000)
+           
+            return;   
+        }
+        else{
+           roomObj.roundState.turnCount=0;
+        }
+    }
+   
+    // I have to disply all socres in sorted Order
 
-    usersInfoArray=[...roomObj.playersMap]
-    io.to(roomId).emit('updatedScore', usersInfoArray);
-    console.log(usersInfoArray, "THis is usersInfo Array")
 
-    
-    startNewRound(roomObj, roomId, io);
-    
+    usersInfoArray = [...roomObj.playersMap];
+
+
+
+//    I will check here the logic of ending the game
+setTimeout(() => {
+        io.to(roomId).emit('updatedScore', usersInfoArray);
+        roomObj.roundState.guessedArray = [];
+        startNewRound(roomObj, roomId, io);
+
+}, 7000);
+
+
 
 }
-// i think when we don't send any messages it disconnects 
-// so because of that we get some problem
+
+
 
 
 
 function startNewRound(roomObj, roomId, io) {
-    if (roomObj.roundState.turnCount == roomObj.playersMap.size) {
-        roomObj.roundState.turnCount = 0;
-    }
-
-
+//    sync the joinedBetween array and the SocketIdMap;
     let wordSet = new Set();
-    //    console.log('we have started new round')
+
 
     while (wordSet.size != 3) {
         let word = Words[Math.floor(Math.random() * Words.length)]
@@ -159,7 +171,7 @@ function startNewRound(roomObj, roomId, io) {
     let drawerId = roomObj.roundState.drawerId;
 
     let drawerUserName = roomObj.playersMap.get(drawerId).userName
-    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName,roomObj.settings.timeLimit);
+    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName, roomObj.roundsPlayed);
     roomObj.roundState.turnCount++;
 
 
@@ -168,7 +180,7 @@ function startNewRound(roomObj, roomId, io) {
     // I will have a timeOut to start the game before the 10 seconds;setDrawer
 
 
-    roomObj.roundState.chooSingWord=true;
+    roomObj.roundState.chooSingWord = true;
     startTimeOut = setTimeout(() => {
         roomObj.roundState.startedAt = Date.now();
         roomObj.roundState.wordToGuess = 'virat';
@@ -176,10 +188,10 @@ function startNewRound(roomObj, roomId, io) {
         io.to(roomId).emit('startTimer', undefined);
         // do something now
         setTimeout(() => {
-           endRound(roomObj, roomId, io)
+            endRound(roomObj, roomId, io)
         }, roomObj.settings.timeLimit)
-        console.log('we are in timeOut');
-        roomObj.roundState.chooSingWord=false;
+
+        roomObj.roundState.chooSingWord = false;
 
     }, 5000)
 

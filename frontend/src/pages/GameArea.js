@@ -1,35 +1,51 @@
 import React, { useContext, useState } from 'react'
 import { gameContext } from '../App'
-import {Canvas,Users,Message,Timer, WordPopUp} from '../components'
+import {Canvas,Users,Message,Timer, WordPopUp,ShowScore,EndGame} from '../components'
 import {useSpring,animated,useTransition} from 'react-spring'
 import '../styles/GameArea.css'
+
 export default function GameArea() {
-  const { socket, roomId,setTimeLimit,setUsersInfo } = useContext(gameContext)
+  const { socket, roomId,setTimeLimit,setUsersInfo ,setGuessedSet,gameEnded} = useContext(gameContext)
   const [words, setWords]=useState([]);
   const [isDrawer,setIsDrawer]=useState(false);
   const [choosingWord,setChoosingWord]=useState(false);
   const [drawerUserName,setDrawerUserName]=useState('');
+  const [roundScore, setRoundScore] = useState([]);
+  const [wordToGuess, setWordToGuess] = useState("");
+  const [round, setRound]=useState(1);
  
 
-  const transition=useTransition(choosingWord, {
+  const wordPopUpTransition=useTransition(choosingWord, {
      from:{x:0, y:-1000,opacity:0},
      enter:{x:0, y:0,opacity:1},
      leave:{x:1000, y:1000, opacity:0},
      delay:500
   })
+
+  const showScoreTransition=useTransition(wordToGuess.length, {
+    from:{x:0, y:-100, opacity:0},
+    enter:{x:0, y:0,   opacity:1},
+    leave:{x:1000, y:1000, opacity:0},
+   }
+  )
  
+  const gameEndTransition=useTransition(gameEnded, {
+    from:{x:0, y:-100, opacity:0},
+    enter:{x:0, y:0,   opacity:1},
+    leave:{x:1000, y:1000, opacity:0},
+  })
 // a prticular player is choosing the word and I have to do popUp in there 
 
-socket.on('setDrawer', (wordArray,drawerId,drawerUserName)=>
+socket.on('setDrawer', (wordArray,drawerId,drawerUserName,round)=>
   {
- 
-    console.log('we have setDrawer message')
+   
      if(socket.id===drawerId){
        setIsDrawer(true);
        setWords(wordArray);
     }
      setChoosingWord(true);
      setDrawerUserName(drawerUserName);
+     setRound(round);
 })
 
 socket.on('startRound', (timeLimit)=>{
@@ -38,7 +54,7 @@ socket.on('startRound', (timeLimit)=>{
 })
 
 socket.on('removeDrawer',(word)=>{
-  console.log('we have got remove drawer')
+
   setIsDrawer(false);
 })
 
@@ -53,12 +69,25 @@ socket.on("joinedWhileChoosingWord",(drawerUserName,timeLimit, usersInfo)=>{
 socket.on('joinedInBetween', (timeLimit)=>{
   setTimeLimit(timeLimit);
 })
+socket.on('roundScore', (roundInfo, actualWord)=>{
+   console.log("this is roundScore=>", roundInfo);
+   setRoundScore(roundInfo);
+   setWordToGuess(actualWord);
+ 
+
+   setTimeout(()=>{
+     setWordToGuess("");
+     setRoundScore([]);
+     setGuessedSet(new Set());
+   },7000)
+})
+
 
 
   return (
     <div className="w-full flex flex-col items-center h-80" >
     <img src="Images/logo.png" className="w-[350px] max-h-24" />
-    {transition((style,item)=>{
+    {wordPopUpTransition((style,item)=>{
       if(item){
          return(
            <animated.div style={style}>
@@ -69,10 +98,11 @@ socket.on('joinedInBetween', (timeLimit)=>{
       else{
         return ""
       }
-    })}
+     })
+    }
     {/* <animated.WordPopUp words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} /> */}
-     
-      <Timer />
+      
+      <Timer round={round}/>
       <div className="flex justify-end md:justify-center">
         <Users />
         <Canvas isDrawer={isDrawer} />
@@ -80,7 +110,30 @@ socket.on('joinedInBetween', (timeLimit)=>{
     
       </div>
       
-      
+      {showScoreTransition((style,item)=>{
+        if(item){
+         return(
+           <animated.div style={style} >
+              <ShowScore  roundScore={roundScore}/>
+           </animated.div>
+        )
+      }
+      else{
+        return ""
+      }
+    })}
+     
+     {
+       gameEndTransition((style ,item)=>{
+         if(item){
+           return(
+             <animated.div style={style} >
+                <EndGame />
+             </animated.div>
+           )
+         }
+       })
+     }
     </div>
   )
 }
