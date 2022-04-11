@@ -10,7 +10,18 @@ import './styles/App.css'
 export const gameContext = createContext(null)
 
 // I have to use Transition for showing the endgame Here
+function displayAvatars(){
+  let array=[];
+      for(let i=0;i<10;i++){
+        array.push(  
+        <img src={`https://robohash.org/${i}`} className={` bg-slate-600`} alt="this is avatar" key={i} />)
 
+      }
+    return(
+      array
+   )
+
+  }
 
 
 export default function App() {
@@ -46,15 +57,15 @@ export default function App() {
 
   // if false we have to go to waiting area else we have to go to gameplay area
 
-  // async function run() {
-  //   let httpResponse=await fetch('http://localhost:5000/',{
-  //     method:"GET",
-  //     headers:{'content-type': 'application/json'}
-  //   })
-  //   let body=await httpResponse.json();
+  async function run() {
+    let httpResponse=await fetch('http://localhost:5000/',{
+      method:"GET",
+      headers:{'content-type': 'application/json'}
+    })
+    let body=await httpResponse.json();
+  }
 
-  // }
-  // run();
+  run();
   useEffect(() => {
     let response = io("http://localhost:8000/");
     setSocket(response);
@@ -108,8 +119,7 @@ export default function App() {
 
 
   return (
-    <div className="h-full w-full bg-heroPattern" id="App" >
-      {/* <img src="pages/Images/logo.png" className="w-2/3 h-full" /> */}
+    <div className="h-full w-full bg-heroPattern overflow-y-hidden" id="App" >
       <BrowserRouter>
         <gameContext.Provider value={{ socket, roomId, setRoomId, startState, setStartState, timeLimit, setTimeLimit, usersInfo, roomCreator, setHome, setUsersInfo, guessedSet, setGuessedSet,gameEnded}} >
           <Routes>
@@ -119,5 +129,11 @@ export default function App() {
         </gameContext.Provider>
       </BrowserRouter>
     </div>
-  )
+
+    // <div className="grid grid-cols-4 w-full h-full  gap-20">
+    //   {displayAvatars()}
+    //   {/* <img src="https://robohash.org/1" className="col-start-1 col-end-4 bg-slate-600 "/> */}
+    //   <p className="col-start-1 col-end-3 bg-slate-600 text-2xl">Hello</p>
+    // </div>
+    )
 }

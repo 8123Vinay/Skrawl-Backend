@@ -17,7 +17,6 @@ export default function Home() {
         for(let i=0;i<10;i++){
           array.push(  
           <img src={`https://robohash.org/${i}`} className={` w-20 h-20  `} alt="this is avatar" key={i}/>)
-
         }
       return(
         array
@@ -62,12 +61,12 @@ export default function Home() {
  
   return (
     <div className="flex flex-col items-center justify-start h-full top-12 left-0 w-full gap-2 border-4 border-red-600">
-    <img src="Images/logo.png" className="w-[500px] max-h-28 " />
+      <img src="Images/logo.png" className="w-[500px] max-h-28 " />
      <div className="flex justify-center flex-wrap w-full ">
        {displayAvatars()}
      </div>
 
-     {/* <div className="mt-12 flex flex-wrap w-[600px] relative h-1/3 border-4 border-slate-500 rounded-xl "> */}
+     
      <form className="border-4 border-slate-600 flex flex-wrap gap-y-16 gap-x-0 p-4 rounded-xl mt-4 bg-gray-300">
       <input type="text" placeholder="username" value={userName} onChange={(e) => {
         setUserName(e.target.value)
@@ -80,22 +79,19 @@ export default function Home() {
         randomString();
         setTimeout(()=>{
           setHome(false)
-        },1000)
+        },500)
         
-      }} value="Create Private Room"/>
+      }} value="Create Private Room" />
 
       <input type="submit" className="text-white bg-green-600 rounded-lg w-full h-12 text-xl" onClick={(e) => {
         e.preventDefault()
         setRoomId(id);
         setTimeout(()=>{
           setHome(false)
-        },200)
+        },100)
       }} value="Play"/>
      </form>
-      
-    {/* </div> */}
-    </div>
-
+   </div>
   )
 }
 

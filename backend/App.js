@@ -36,56 +36,9 @@ const rooms = newSocket.instance.of("/").adapter.rooms;
 const sids = newSocket.instance.of("/").adapter.sids;
 
 
-// I will have an array of objects
 
 
-
-
-
-// service is to create a websocket connection
-
-// when I start round I have to make all the scores 
-//in the round to be zero each time
-
-// I have to first display the round end someHow
-
-
-// I will have to choose a random word and add to the round state
-//each time the word that is to be guessed
-
-// function sendUsers(id){
-//     let socketIds=[...rooms.get(id)]
-//     let userNames=[];
-
-//     for(let i=0;i<socketIds.length;i++){
-//         userNames.push(map1.get(socketIds[i]))
-//     }
-//     newSocket.instance.in(id).emit("players", userNames, socketIds)
-
-// }
-
-// I will have to create A map
-// of roomId with all the data
-// 
-
-// map1("roomId",  {socres:{user1:score, user2:score, user3:score}})
-// map2("roomId", {socres:{users}, drawer,//how is next drawing})
-// const roundState={
-//     roomId:[],
-//     players:[],
-//     drawer:"",
-//     socres:{user1:score, user2:score, user3:score}
-// }
-// if any new player joins we have to update it in the roomState as 
-// well as in the roundState
-
-// we will merge the score after each round;
-// I will have to keep the count how many plaeyrs guessed correctly
-// depending on that we have to decide how much socre is given to each
-// player
-
-
-const { startNewRound, handleMessage, startTimeOut, wordChosen } = require("./models/Round")
+const { startNewRound, handleMessage, wordChosen,startGameTimeOut,endGameTimeOut } = require("./models/Round")
 const { roomStateMap, joinRoom, createRoom, socketIdMap, } = require("./services/state.js")
 const { startGame } = require('./models/Room')
 
@@ -224,7 +177,6 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
 socket.on('chosenWord', (word, roomId) => {
 
     let roomObj = roomStateMap.get(roomId)
-    clearTimeout(startTimeOut);
     startNewRound(roomObj, roomId, newSocket.instance);
     roomObj.roundState.wordToGuess=word;
     wordChosen(word,roomObj,newSocket.instance,roomId)
@@ -249,7 +201,18 @@ socket.on('chosenWord', (word, roomId) => {
 
     roomObj.roundState.playersMap.delete(socket.id);
 
+    if(roomObj.playersMap.size==1){
+      clearTimeout(startGameTimeOut);
+      clearTimeout(endGameTimeOut);
+      newSocket.instance.to(roomId).emit('gameEnded', [...roomObj.playersMap]);
+      return;
+    }
+
+
     newSocket.instance.to(roomId).emit('updatedScore', [...roomObj.playersMap]);
+
+    // now after sending the score we have to update the backend
+
 
     // get the index of the socketIdMap
     let array=socketIdMap.get(roomId);
@@ -264,10 +227,11 @@ socket.on('chosenWord', (word, roomId) => {
          roomObj.roundState.turnCount--;
       }
     }
-
+  console.log("index=>",  index, "socketId=>",socket.id);
+ 
   });  
 
-
+ 
 })
 
 // the room creator has the power to start the game

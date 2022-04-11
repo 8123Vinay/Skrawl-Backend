@@ -1,5 +1,6 @@
 const { socketIdMap } = require("../services/state.js");
-let startTimeOut = null;
+let startGameTimeOut;
+let endGameTimeOut;
 
 
 function handleMessage(message, roomObj, socketId, roomId, io) {
@@ -98,7 +99,7 @@ function endRound(roomObj, roomId, io) {
 
     roomObj.roundState.roundCanvasData = [];
 
-    syncRound(roomObj, roomId); 
+    syncRound(roomObj, roomId);
 
     let usersInfoArray = [...roomObj.playersMap];
 
@@ -112,20 +113,20 @@ function endRound(roomObj, roomId, io) {
         (roomObj.playersMap.get(socketId)).rank = i + 1;
 
     }
-   
-    if(roomObj.roundState.turnCount>=socketIdMap.get(roomId).length){
-        if(roomObj.settings.rounds==roomObj.roundsPlayed){
-            setTimeout(()=>{
+
+    if (roomObj.roundState.turnCount >= socketIdMap.get(roomId).length) {
+        if (roomObj.settings.rounds == roomObj.roundsPlayed) {
+            setTimeout(() => {
                 io.to(roomId).emit('gameEnded', usersInfoArray);
-            },10000)
-           
-            return;   
+            }, 10000)
+
+            return;
         }
-        else{
-           roomObj.roundState.turnCount=0;
+        else {
+            roomObj.roundState.turnCount = 0;
         }
     }
-   
+
     // I have to disply all socres in sorted Order
 
 
@@ -133,13 +134,13 @@ function endRound(roomObj, roomId, io) {
 
 
 
-//    I will check here the logic of ending the game
-setTimeout(() => {
+    //    I will check here the logic of ending the game
+    setTimeout(() => {
         io.to(roomId).emit('updatedScore', usersInfoArray);
         roomObj.roundState.guessedArray = [];
         startNewRound(roomObj, roomId, io);
 
-}, 7000);
+    }, 7000);
 
 
 
@@ -150,7 +151,7 @@ setTimeout(() => {
 
 
 function startNewRound(roomObj, roomId, io) {
-//    sync the joinedBetween array and the SocketIdMap;
+    //    sync the joinedBetween array and the SocketIdMap;
     let wordSet = new Set();
 
 
@@ -170,9 +171,12 @@ function startNewRound(roomObj, roomId, io) {
 
     let drawerId = roomObj.roundState.drawerId;
 
-    let drawerUserName = roomObj.playersMap.get(drawerId).userName
-    io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName, roomObj.roundsPlayed);
-    roomObj.roundState.turnCount++;
+    if (drawerId) {
+        let drawerUserName = roomObj.playersMap.get(drawerId).userName
+        io.to(roomId).emit('setDrawer', wordArray, drawerId, drawerUserName, roomObj.roundsPlayed);
+        roomObj.roundState.turnCount++;
+    }
+
 
 
     // io.to(roomId).emit('maskedWord', word.length);
@@ -180,14 +184,15 @@ function startNewRound(roomObj, roomId, io) {
     // I will have a timeOut to start the game before the 10 seconds;setDrawer
 
 
-    roomObj.roundState.chooSingWord = true;
-    startTimeOut = setTimeout(() => {
+
+       roomObj.roundState.chooSingWord = true;
+        startGameTimeOut =startTimeOut = setTimeout(() => {
         roomObj.roundState.startedAt = Date.now();
         roomObj.roundState.wordToGuess = 'virat';
         io.to(roomId).emit('startRound', roomObj.settings.timeLimit);
         io.to(roomId).emit('startTimer', undefined);
         // do something now
-        setTimeout(() => {
+        endGameTimeOut = setTimeout(() => {
             endRound(roomObj, roomId, io)
         }, roomObj.settings.timeLimit)
 
@@ -226,4 +231,4 @@ function wordChosen(word, roomObj, io, roomId) {
 // if a person joins in the middle he will not get the chance in this round
 
 
-module.exports = { startNewRound, increaseScore, handleMessage, startTimeOut, wordChosen }
+module.exports = { startNewRound, increaseScore, handleMessage, wordChosen,endGameTimeOut}

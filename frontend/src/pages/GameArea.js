@@ -95,9 +95,7 @@ socket.on('roundScore', (roundInfo, actualWord)=>{
            </animated.div>
         )
       }
-      else{
-        return ""
-      }
+      
      })
     }
     {/* <animated.WordPopUp words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} /> */}
@@ -117,9 +115,6 @@ socket.on('roundScore', (roundInfo, actualWord)=>{
               <ShowScore  roundScore={roundScore}/>
            </animated.div>
         )
-      }
-      else{
-        return ""
       }
     })}
      
