@@ -5,9 +5,8 @@
   "scripts": {
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "node backend/App.js"
-  }
-,  
+    "start": "nodemon backend/App.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/8123Vinay/Skribble.git"

@@ -10,8 +10,7 @@ class GameSocket{
        this.instance=new Server(http_server, {
         cors:{
             origin:[
-                'https://skrawl.herokuapp.com/',
-                "http://localhost:3000/"
+                'https://chic-eclair-8d3c48.netlify.app/'
             ]
          },
         }
