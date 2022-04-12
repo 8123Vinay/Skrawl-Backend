@@ -12,7 +12,7 @@ class GameSocket{
             origin:[
                 'http://localhost:3000',
                 "https://chic-eclair-8d3c48.netlify.app",
-                "https://startling-salamander-8ed64a.netlify.app/",
+                "https://startling-salamander-8ed64a.netlify.app",
             ]
          },
         }
