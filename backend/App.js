@@ -42,7 +42,8 @@ const socketRoomMap=new Map;
 // and i will use the model to functions to update my room state
 
 newSocket.instance.on("connection", (socket) => {
-     console.log('we have connected')
+     console.log('we have connected');
+     newSocket.instance.to(socket.id).emit("joinMessage", "Hello");
   socket.on("join-room", (roomId, userName) => {
     
 

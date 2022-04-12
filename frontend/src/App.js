@@ -53,11 +53,15 @@ export default function App() {
   }
 
   useEffect(() => {
-    let response = io("http://localhost:8000/");
+    let response = io("https://skrawl.herokuapp.com");
     setSocket(response);
   }, [])
 
   if (socket) {
+
+    socket.on('joinMessage',()=>{
+      console.log("THis is joining message");
+    })
 
     socket.on('joinedBefore', (startState, usersInfo) => {
       setStartState(startState);
