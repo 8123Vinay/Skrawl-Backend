@@ -77,7 +77,7 @@ let cursor=roomCreator ? 'cursor-pointer'  :  "cursor-not-allowed"
      </div>
      </div>
      </div>
-     <h1 className="text-lg p-2 bg-gray-600 mine:text-2xl">{`http://localhost:3000/${roomId}`}</h1>
+     <h1 className="text-lg p-2 bg-gray-600 mine:text-2xl">{`https://chic-eclair-8d3c48.netlify.app/${roomId}`}</h1>
     </div>
   )
 
