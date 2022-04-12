@@ -178,6 +178,7 @@ socket.on('chosenWord', (word, roomId) => {
    
     
     let roomId=socketRoomMap.get(socket.id);
+    if(roomId){
     let roomObj=roomStateMap.get(roomId);
     socketRoomMap.delete(socket.id);
     // I have to delete it in the playersMap and as well as In the roundplayersmap
@@ -186,7 +187,8 @@ socket.on('chosenWord', (word, roomId) => {
     let userName=roomObj.playersMap.get(socket.id).userName;
     newSocket.instance.to(roomId).emit('groupMessage',({userName:userName, message:'leftSpace',socketId:socket.id}));
     
-    
+    // first I have to check has he joined a room
+
     roomObj.playersMap.delete(socket.id);
 
     roomObj.roundState.playersMap.delete(socket.id);
@@ -218,7 +220,7 @@ socket.on('chosenWord', (word, roomId) => {
       }
     }
   console.log("index=>",  index, "socketId=>",socket.id);
- 
+    }
   });  
 
  
