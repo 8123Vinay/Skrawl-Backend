@@ -1,12 +1,13 @@
 {
   "name": "skribble",
   "version": "1.0.0",
-  "description": "skribble game clone",
-  "main": "index.js",
+  "description": "skribble game clone backend",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start":"nodemon backend/App.js"
-  },
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start": "node App.js"
+  }
+,  
   "repository": {
     "type": "git",
     "url": "git+https://github.com/8123Vinay/Skribble.git"

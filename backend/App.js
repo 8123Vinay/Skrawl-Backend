@@ -1,19 +1,8 @@
 const app = require("express")();
 const httpServer = require("http").createServer(app);
 
-// I will have a map of socketId and roomId map 
-// which will be unique
+const PORT = process.env.PORT || 8000;
 
-// I will run a timer in the frontend and 
-
-
-// I have to display the rank on here
-// sort based on the score and then get the 
-
-
-// In socketIdMap <roomId, [ {socketId:,score: userName} ]
-// 
-// I will use the App.js as a controller
 app.use((req,res,next)=>{
   res.setHeader("Access-Control-Allow-Origin" ,"*")
   res.setHeader("Access-Control-Allow-Methods","GET");
@@ -238,8 +227,8 @@ socket.on('chosenWord', (word, roomId) => {
 
 
 
-httpServer.listen(8000, () => {
-  console.log("we are listening on 8000");
+httpServer.listen(PORT, () => {
+  console.log("we are listening on", PORT);
 });
 
 
