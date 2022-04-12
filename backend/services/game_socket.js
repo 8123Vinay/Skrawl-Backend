@@ -10,7 +10,7 @@ class GameSocket{
        this.instance=new Server(http_server, {
         cors:{
             origin:[
-                'http://localhost:3000'
+                '*'
             ]
          },
         }

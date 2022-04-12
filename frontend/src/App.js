@@ -57,15 +57,15 @@ export default function App() {
 
   // if false we have to go to waiting area else we have to go to gameplay area
 
-  async function run() {
-    let httpResponse=await fetch('http://localhost:5000/',{
-      method:"GET",
-      headers:{'content-type': 'application/json'}
-    })
-    let body=await httpResponse.json();
-  }
+  // async function run() {
+  //   let httpResponse=await fetch('http://localhost:5000/',{
+  //     method:"GET",
+  //     headers:{'content-type': 'application/json'}
+  //   })
+  //   let body=await httpResponse.json();
+  // }
 
-  run();
+  // run();
   useEffect(() => {
     let response = io("https://skrawl.herokuapp.com/");
     setSocket(response);
