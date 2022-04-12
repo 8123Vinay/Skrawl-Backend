@@ -3,17 +3,17 @@ const httpServer = require("http").createServer(app);
 
 
 
-app.use((req,res,next)=>{
-  res.setHeader("Access-Control-Allow-Origin" ,"https://chic-eclair-8d3c48.netlify.app/")
-  res.setHeader("Access-Control-Allow-Methods","GET");
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  next();
-})
+// app.use((req,res,next)=>{
+//   res.setHeader("Access-Control-Allow-Origin" ,"http://localhost:3000/")
+//   res.setHeader("Access-Control-Allow-Methods","GET");
+//   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+//   next();
+// })
 
-app.get("/", (req,res)=>{
+// app.get("/", (req,res)=>{
  
-  res.json("Hello user How are you this is checking the get request")
-})
+//   res.json("Hello user How are you this is checking the get request")
+// })
 
 const { GameSocket, createJoinRoom } = require("./services/game_socket");
 let newSocket = new GameSocket();
@@ -42,7 +42,7 @@ const socketRoomMap=new Map;
 // and i will use the model to functions to update my room state
 
 newSocket.instance.on("connection", (socket) => {
-
+     console.log('we have connected')
   socket.on("join-room", (roomId, userName) => {
     
 
@@ -227,7 +227,7 @@ socket.on('chosenWord', (word, roomId) => {
 
 
 
-httpServer.listen(process.env.PORT || 8000, () => {
+httpServer.listen(8000, () => {
   console.log("we are listening on");
 });
 

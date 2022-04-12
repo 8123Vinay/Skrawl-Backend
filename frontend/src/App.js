@@ -53,7 +53,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    let response = io("https://skrawl.herokuapp.com/");
+    let response = io("http://localhost:8000/");
     setSocket(response);
   }, [])
 
@@ -105,7 +105,7 @@ export default function App() {
 
 
   return (
-    <div className="h-full w-full bg-heroPattern overflow-y-hidden" id="App" >
+    <div className="h-screen w-screen bg-heroPattern overflow-y-hidden" id="App" >
       <BrowserRouter>
         <gameContext.Provider value={{ socket, roomId, setRoomId, startState, setStartState, timeLimit, setTimeLimit, usersInfo, roomCreator, setHome, setUsersInfo, guessedSet, setGuessedSet,gameEnded}} >
           <Routes>
