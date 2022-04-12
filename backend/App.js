@@ -4,7 +4,7 @@ const httpServer = require("http").createServer(app);
 const PORT = process.env.PORT || 8000;
 
 app.use((req,res,next)=>{
-  res.setHeader("Access-Control-Allow-Origin" ,"*")
+  res.setHeader("Access-Control-Allow-Origin" ,"https://skrawl.herokuapp.com/")
   res.setHeader("Access-Control-Allow-Methods","GET");
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   next();
