@@ -67,7 +67,7 @@ export default function App() {
 
   run();
   useEffect(() => {
-    let response = io("http://localhost:8000/");
+    let response = io("https://skrawl.herokuapp.com/");
     setSocket(response);
   }, [])
 
