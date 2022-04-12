@@ -5,7 +5,7 @@
   "scripts": {
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "start": "node App.js"
+    "start": "node backend/App.js"
   }
 ,  
   "repository": {

@@ -227,8 +227,8 @@ socket.on('chosenWord', (word, roomId) => {
 
 
 
-httpServer.listen(PORT, () => {
-  console.log("we are listening on", PORT);
+httpServer.listen(process.env.PORT || 8000, () => {
+  console.log("we are listening on");
 });
 
 
