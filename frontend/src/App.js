@@ -53,7 +53,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    let response = io("https://skrawl.herokuapp.com/");
+    let response = io("https://git.heroku.com/skrawl.git");
     setSocket(response);
   }, [])
 

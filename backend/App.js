@@ -42,7 +42,7 @@ const socketRoomMap=new Map;
 // and i will use the model to functions to update my room state
 
 newSocket.instance.on("connection", (socket) => {
-     console.log('we have connected');
+     console.log('we have a connection');
      newSocket.instance.to(socket.id).emit("joinMessage", "Hello");
   socket.on("join-room", (roomId, userName) => {
     
@@ -173,6 +173,10 @@ socket.on('chosenWord', (word, roomId) => {
  
   })
 
+  socket.on('mouse', (e)=>{
+    console.log(e, "we have receieved");
+  })
+
 
   socket.on("disconnect", () => {
    
@@ -230,9 +234,9 @@ socket.on('chosenWord', (word, roomId) => {
 
 
 
-httpServer.listen(process.env.PORT || 8000, () => {
-  console.log("we are listening on");
-});
+httpServer.listen(8000, "10.10.4.25" , ()=>{
+  console.log('we are listening on 10.10.4.25:8000')
+})
 
 
 // I will have a joined Between array where I will add it to that

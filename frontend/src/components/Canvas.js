@@ -111,20 +111,49 @@ if(isDrawer){
         }} onMouseUp={()=>{
           setDraw(false);
   
-        }}/>
+        }} onTouchMove={(e)=>{
+          if(ctx){
+            if(drawingType==0){
+              ctx.strokeStyle='black';
+            }
+
+            else if(drawingType==1){
+              ctx.strokeStyle='white';
+            }
+            
+             socket.emit('mouse', 'mouse touch Receieved');
+             ctx.lineWidth=10;
+
+             ctx.lineCap="round"
+
+             ctx.beginPath();
+
+             emitData(drawingType, start.x, start.y, e.clientX-offset.left, e.clientY-offset.top, canvasSize);
+    
+             ctx.moveTo(start.x, start.y);
+ 
+             ctx.lineTo(e.clientX-offset.left, e.clientY-offset.top);
+ 
+             ctx.stroke();
+    
+
+  
+            setStart({x:e.clientX-offset.left, y:e.clientY-offset.top})
+
+        }} } />
         </div>
         <div id="tools " className="flex gap-2">
           <button onClick={()=>{
             setDrawingType(0)
-          }} className="bg-blue-600 text-white text-6xl">✏️</button>
+          }} className="bg-blue-600 text-white md:text-6xl text-2xl">✏️</button>
   
           <button onClick={()=>{
             setDrawingType(1)
-          }} className="bg-blue-600 text-white text-6xl w-20">
+          }} className="bg-blue-600 text-white md:text-6xl text-2xl w-20">
             <div className="bg-white w-12 h-4 ml-4 -rotate-45"></div>
           </button>
   
-          <button className=" bg-blue-600 text-white text-6xl" onClick={()=>{
+          <button className=" bg-blue-600 text-white md:text-6xl text-2xl " onClick={()=>{
             if(ctx){
          
               ctx.clearRect(0, 0, canvasSize, canvasSize);
