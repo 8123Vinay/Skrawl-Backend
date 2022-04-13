@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 
 
 
+
 export default function Home() {
 
   const { socket,roomId,setRoomId,setHome} = useContext(gameContext)
@@ -16,7 +17,7 @@ export default function Home() {
     let array=[];
         for(let i=0;i<10;i++){
           array.push(  
-          <img src={`https://robohash.org/${i}`} className={` w-20 h-20  `} alt="this is avatar" key={i}/>)
+          <img src={`https://robohash.org/${i}`} className={` form:w-20 form:h-20 w-16 h-16 `} alt="this is avatar" key={i}/>)
         }
       return(
         array
@@ -60,37 +61,38 @@ export default function Home() {
 
  
   return (
-    <div className="flex flex-col items-center justify-start h-full top-12 left-0 w-full gap-2 border-4 border-red-600">
+    <div className="flex flex-col items-center justify-start h-screen top-12 left-0 w-screen gap-2 border-4 border-red-600">
       <img src="Images/logo.png" className="w-[500px] max-h-28 " />
      <div className="flex justify-center flex-wrap w-full ">
        {displayAvatars()}
      </div>
 
-     
-     <form className="border-4 border-slate-600 flex flex-wrap gap-y-16 gap-x-0 p-4 rounded-xl mt-4 bg-gray-300">
+     <div className="form:w-96 flex flex-col justify-between h-80 bg-slate-600 p-4 mt-4 w-5/6 gap-4">
+     {/* <form className="border-4 border-slate-600 p-4 rounded-xl mt-4 bg-gray-300 flex flex-col h-80 justify-between "> */}
       <input type="text" placeholder="username" value={userName} onChange={(e) => {
         setUserName(e.target.value)
 
-      }} className="border-2 pl-2 border-slate-600 w-full h-12  rounded-xl border-box " />
+      }} className="border-2 pl-2 border-slate-600 h-12 rounded-xl border-box " />
      
 
-      <input type='submit' className="text-white bg-blue-600 rounded-lg w-full h-12 text-xl" onClick={(e) => {
-        e.preventDefault()
+      <button className="text-white bg-blue-600 rounded-lg h-12 sm:h-12  hover:opacity-80" onClick={(e) => {
+  
         randomString();
         setTimeout(()=>{
           setHome(false)
         },500)
         
-      }} value="Create Private Room" />
+      }}> Create Private Room</button>
 
-      <input type="submit" className="text-white bg-green-600 rounded-lg w-full h-12 text-xl" onClick={(e) => {
-        e.preventDefault()
+      <button className="text-white bg-green-600 rounded-lg h-12 sm:h-12 text-xl hover:opacity-80 " onClick={(e) => {
+    
         setRoomId(id);
         setTimeout(()=>{
           setHome(false)
         },100)
-      }} value="Play"/>
-     </form>
+      }}>Play</button>
+     {/* </form> */}
+   </div>
    </div>
   )
 }

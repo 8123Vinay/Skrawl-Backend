@@ -5,11 +5,18 @@ import { gameContext } from '../App'
 export default function Message() {
     const { socket,roomId, guessedSet, setGuessedSet} = useContext(gameContext)
     const[message,setMessage]=useState("");
-    const[groupMessageArray,setGroupMessageArray]=useState([])
+    const[groupMessageArray,setGroupMessageArray]=useState([" ", " ", " ", " ", " ", " "," ", " "])
 
 
  
      let displayMessages=groupMessageArray.map((x,i)=>{
+        if(x==" "){
+          return(
+            <div className="text-white">a</div>
+          )
+        }
+        else{
+
         let bgColour="bg-slate-300";
         let textColor='text-black';
         if(x.message==='Guessed Correctly'){
@@ -23,6 +30,7 @@ export default function Message() {
             <p className={`ml-4 ${textColor} font-semibold`}>{x.userName}::{x.message}</p>
             </div>
           )
+        }
       })
      
 
@@ -33,10 +41,7 @@ export default function Message() {
 
     socket.on("groupMessage", (messageObj, guessedArray)=>{
 
-       if(groupMessageArray.length===10){
-         groupMessageArray.splice(0,1);
-       }
-       setGroupMessageArray([...groupMessageArray, messageObj])
+       setGroupMessageArray([messageObj,...groupMessageArray])
       
        if(messageObj.message=='Guessed Correctly'){
           setGuessedSet(new Set(guessedArray));
@@ -49,24 +54,19 @@ export default function Message() {
 
     
   return (
-    <div className="border-4 border-slate-600 text-black min-w-[320px] h-[500px] bg-white">
-     <div className="absolute right-20 bottom-10 flex flex-wrap">
-      {/* I will have to make the send message in the game area */}
+    <div className="border-4 border-slate-600 text-black min-w-[280px] h-[300px] bg-white flex flex-col justify-between">
+    <div className="flex flex-col-reverse overflow-y-scroll ">
+      {displayMessages}
+    </div>
       <input type="text" placeholder="type message"  value={message} onChange={(e)=>{
          setMessage(e.target.value)
-       }} className="border-2 border-indigo-600 h-12" onKeyDown={(e)=>{
+       }} className="border-2 border-indigo-600 h-8 w-full " onKeyDown={(e)=>{
           if(e.keyCode==13){
             socket.emit("wordGuess", roomId, message)
             setMessage("")
           }
        }} autoFocus />
-       <button onClick={()=>{
-          socket.emit("wordGuess", roomId, message)
-          setMessage("")
-       }}className="text-white w-20 h-12 bg-blue-600 rounded-lg">Send</button>
-
-      </div>
-      {displayMessages}
+       {/* I want to keep the input field fixed */}
     </div>
   )
 }
