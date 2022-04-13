@@ -11,7 +11,7 @@ class GameSocket{
         cors:{
             origin:[
                 'http://localhost:3000',
-                "https://skrawlgame.netlify.app/",
+                "https://skrawlgame.netlify.app",
             ]
          },
         }
