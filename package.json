@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "skribble game clone backend",
   "scripts": {
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
     "start": "nodemon backend/App.js"
   },
   "repository": {

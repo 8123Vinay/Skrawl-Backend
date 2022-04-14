@@ -1,6 +1,0 @@
-.gridContainer{
-    display:grid;
-    grid-template-columns:200px auto 200px;
-    grid-gap:0;
-}
-
