@@ -7,7 +7,7 @@ export default function ShowScore({roundScore}) {
 
        array=roundScore.map((user,i)=>{
             return(
-                <h1 className={`text-white text-2xl w-full text-center`} key={i}>
+                <h1 className={`text-white text-2xl w-full text-center opacity-100 z-10`} key={i}>
                     {user[1].userName}:+{user[1].score}
                 </h1>
             )
@@ -16,7 +16,7 @@ export default function ShowScore({roundScore}) {
     }
 
     return (
-        <div className="w-full h-full fixed top-0 left-0 fixed bg-black opacity-50 flex flex-col text-bold justify-center items-center ">
+        <div className="w-full h-full fixed top-0 left-0 fixed bg-black opacity-60 flex flex-col text-bold justify-center items-center z-1">
             <h1>
                The word is {wordToGuess}
             </h1>

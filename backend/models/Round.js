@@ -118,7 +118,12 @@ function endRound(roomObj, roomId, io) {
         if (roomObj.settings.rounds == roomObj.roundsPlayed) {
             setTimeout(() => {
                 io.to(roomId).emit('gameEnded', usersInfoArray);
+                 
+                setTimeout(()=>{
+                   startNewGame(roomObj,roomId,io);
+                },3000) 
             }, 10000)
+   
 
             return;
         }
@@ -147,7 +152,16 @@ function endRound(roomObj, roomId, io) {
 }
 
 
-
+function startNewGame(roomObj,roomId,io){
+   roomObj.playersMap.forEach((value,key)=>{
+       value.score=0;
+   });
+   roomObj.roundState.playersMap.forEach((value, key)=>{
+       value.score=0;
+     }
+   )
+   startNewRound(roomObj,roomId,io)
+}
 
 
 function startNewRound(roomObj, roomId, io) {
@@ -177,11 +191,6 @@ function startNewRound(roomObj, roomId, io) {
         roomObj.roundState.turnCount++;
     }
 
-
-
-    // io.to(roomId).emit('maskedWord', word.length);
-
-    // I will have a timeOut to start the game before the 10 seconds;setDrawer
 
 
 

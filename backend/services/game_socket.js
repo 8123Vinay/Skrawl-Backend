@@ -17,15 +17,12 @@ class GameSocket{
         }
       )
     }
-
-    
 }
 //this is the functionality of creating a gameSocekt connectio
 //and now i have to create a room 
 
 function createJoinRoom(socket, id){
    socket.join(id);
-
 }
 
 

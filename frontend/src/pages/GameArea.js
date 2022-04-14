@@ -91,14 +91,19 @@ socket.on('roundScore', (roundInfo, actualWord)=>{
       if(item){
          return(
            <animated.div style={style}>
-              {/* <WordPopUp  words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} /> */}
+              <WordPopUp  words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} />
            </animated.div>
+        )
+      }
+      else{
+        return(
+          <div>""</div>
         )
       }
       
      })
     }
-    {/* <animated.WordPopUp words={words} socket= {socket} roomId={roomId} setWords={setWords} choosingWord={choosingWord} drawerId={drawerUserName} /> */}
+   
       
       <Timer round={round}/>
       <div className="flex justify-end md:justify-center">

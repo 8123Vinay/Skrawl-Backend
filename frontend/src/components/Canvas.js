@@ -130,7 +130,7 @@ export default function Canvas({isDrawer, setIsDrawer}) {
 
 if(isDrawer){
     return (
-      <div id="canvas" className="" >
+      <div id="canvas" className="overscroll-contain" >
         {/* <WordPopUp socket={socket} words={words} roomId={roomId} setWords={setWords}/> */}
         {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
         <div id="canvas-area" >

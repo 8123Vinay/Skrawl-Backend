@@ -61,13 +61,13 @@ export default function Home() {
 
  
   return (
-    <div className=" flex flex-col items-center justify-start top-12 left-0 w-screen gap-2 border-4 border-red-600">
+    <div className=" flex flex-col h-screen items-center justify-start top-12 left-0 w-screen gap-2 border-4 border-red-600">
       <img src="Images/logo.png" className="w-[500px] max-h-28 " />
      <div className="flex justify-center flex-wrap w-full ">
        {displayAvatars()}
      </div>
 
-     <div className="form:w-96 flex flex-col justify-between h-80 bg-slate-600 p-4 mt-4 w-5/6 gap-4">
+     <div className="form:w-96 flex flex-col justify-between h-80 bg-slate-600 p-4 mt-4 w-5/6 ">
      {/* <form className="border-4 border-slate-600 p-4 rounded-xl mt-4 bg-gray-300 flex flex-col h-80 justify-between "> */}
       <input type="text" placeholder="username" value={userName} onChange={(e) => {
         setUserName(e.target.value)

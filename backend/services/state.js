@@ -67,19 +67,6 @@ class RoomStateClass{
 }
 
 
-// I have a new map object Now I have to add the playerInfoClass to the RoomStateClass
-
-
-// now I have created a room Objcet and I have a map
-// I want to add player to the room
-
-// let x=roomState.get('roomName')
-// // I have roomStateClass with me now
-// let userMap=x.players;
-// // I have usersMap with me now
-
-
-
 function createRoom(RoomId, rounds, timeLimit, startState){
     let setting1=new SettingsClass(rounds,timeLimit);
     let round1=new RoundStateClass('apple',0, 1,[]);
@@ -102,16 +89,10 @@ function joinRoom(roomId, socketId,userName){
 
 }
 
-// I have to have the time limit 
-
-// can I have a round object in the room state only
-
 
 
 module.exports={roomStateMap,PlayerInfoClass, SettingsClass, RoomStateClass,joinRoom,createRoom,RoundStateClass,addToSocketIdMap,socketIdMap}
 
 
 
-// round state we have to do 
-// round state has to get settings from the room state
 
