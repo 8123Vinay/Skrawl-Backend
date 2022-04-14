@@ -61,7 +61,7 @@ export default function Home() {
 
  
   return (
-    <div className="flex flex-col items-center justify-start h-screen top-12 left-0 w-screen gap-2 border-4 border-red-600">
+    <div className=" flex flex-col items-center justify-start top-12 left-0 w-screen gap-2 border-4 border-red-600">
       <img src="Images/logo.png" className="w-[500px] max-h-28 " />
      <div className="flex justify-center flex-wrap w-full ">
        {displayAvatars()}

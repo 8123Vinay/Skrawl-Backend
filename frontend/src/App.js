@@ -109,7 +109,7 @@ export default function App() {
 
 
   return (
-    <div className="h-screen w-screen bg-heroPattern overflow-y-hidden" id="App" >
+    <div className="md:h-screen h-4/5 w-screen bg-heroPattern overflow-y-hidden overscroll-y-contain" id="App" >
       <BrowserRouter>
         <gameContext.Provider value={{ socket, roomId, setRoomId, startState, setStartState, timeLimit, setTimeLimit, usersInfo, roomCreator, setHome, setUsersInfo, guessedSet, setGuessedSet,gameEnded}} >
           <Routes>

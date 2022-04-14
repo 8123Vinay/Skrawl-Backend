@@ -21,8 +21,70 @@ export default function Canvas({isDrawer, setIsDrawer}) {
   const [offset,setOffsets]=useState({});
   const [canvasSize,setCanvasSize]=useState(0);
   
+  function drawingByMouse(e){
+    if(ctx && draw){
+      if(drawingType==0){
+        ctx.strokeStyle='black';
+      }
+
+      else if(drawingType==1){
+        ctx.strokeStyle='white';
+      }
+
+  
+      ctx.lineWidth=2;
+
+       ctx.lineCap="round"
+
+       ctx.beginPath();
+
+        emitData(drawingType, start.x, start.y, e.clientX-offset.left, e.clientY-offset.top, canvasSize);
+
+        ctx.moveTo(start.x, start.y);
+
+        ctx.lineTo(e.clientX-offset.left, e.clientY-offset.top);
+
+        ctx.stroke();
 
 
+      }
+
+
+      setStart({x:e.clientX-offset.left, y:e.clientY-offset.top})
+  }
+
+ function drawingOnMobile(e){
+  if(ctx){
+    if(drawingType==0){
+      ctx.strokeStyle='black';
+     
+    }
+
+    else if(drawingType==1){
+      ctx.strokeStyle='white';
+     
+    }
+    ctx.lineWidth=2;
+    
+     socket.emit('mouse', 'mouse touch Receieved');
+
+     ctx.lineCap="round"
+
+     ctx.beginPath();
+
+     emitData(drawingType, start.x, start.y, e.touches[0].clientX-offset.left, e.touches[0].clientY-offset.top, canvasSize);
+
+     ctx.moveTo(start.x, start.y);
+
+     ctx.lineTo(e.touches[0].clientX-offset.left, e.touches[0].clientY-offset.top);
+
+     ctx.stroke();
+
+
+
+    setStart({x:e.touches[0].clientX-offset.left, y:e.touches[0].clientY-offset.top})
+ }
+}
 
   function emitData(drawingType,startX,startY, endX, endY,canvasSize){
     if(socket){
@@ -72,75 +134,26 @@ if(isDrawer){
         {/* <WordPopUp socket={socket} words={words} roomId={roomId} setWords={setWords}/> */}
         {/* <p className="text-2xl text-center">{wordToGuess}</p> */}
         <div id="canvas-area" >
-        <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 bg-white"  onMouseMove={(e)=>{
-            if(ctx && draw){
-              if(drawingType==0){
-                ctx.strokeStyle='black';
-              }
-
-              else if(drawingType==1){
-                ctx.strokeStyle='white';
-              }
- 
-          
-              ctx.lineWidth=10;
-  
-               ctx.lineCap="round"
-
-               ctx.beginPath();
-
-                emitData(drawingType, start.x, start.y, e.clientX-offset.left, e.clientY-offset.top, canvasSize);
-    
-                ctx.moveTo(start.x, start.y);
-    
-                ctx.lineTo(e.clientX-offset.left, e.clientY-offset.top);
-    
-                ctx.stroke();
-       
-
-              }
-  
-     
-              setStart({x:e.clientX-offset.left, y:e.clientY-offset.top})
-
-  
-        }} onMouseDown={(e)=>{
+        <canvas ref={canvasRef} width="200" height="200" className="canvas-container border-4 border-red-600 bg-white overscroll-contain"  onMouseMove={(e)=>{
+            drawingByMouse(e);
+          }} onMouseDown={(e)=>{
           setDraw(true);
+          ctx.lineTo(e.clientX-offset.left, e.clientY-offset.top);
+          drawingByMouse(e);
          
           
-        }} onMouseUp={()=>{
+        }} onMouseUp={(e)=>{
           setDraw(false);
   
-        }} onTouchMove={(e)=>{
-          if(ctx){
-            if(drawingType==0){
-              ctx.strokeStyle='black';
-            }
+        }}
+         
+        onTouchMove={(e)=>{
+          drawingOnMobile(e);
 
-            else if(drawingType==1){
-              ctx.strokeStyle='white';
-            }
-            
-             socket.emit('mouse', 'mouse touch Receieved');
-             ctx.lineWidth=10;
-
-             ctx.lineCap="round"
-
-             ctx.beginPath();
-
-             emitData(drawingType, start.x, start.y, e.clientX-offset.left, e.clientY-offset.top, canvasSize);
-    
-             ctx.moveTo(start.x, start.y);
- 
-             ctx.lineTo(e.clientX-offset.left, e.clientY-offset.top);
- 
-             ctx.stroke();
-    
-
-  
-            setStart({x:e.clientX-offset.left, y:e.clientY-offset.top})
-
-        }} } />
+        }}  onTouchStart={(e)=>{
+           setStart({x:e.touches[0].clientX-offset.left, y:e.touches[0].clientY-offset.top});
+           drawingOnMobile(e);
+        }}/>
         </div>
         <div id="tools " className="flex gap-2">
           <button onClick={()=>{
@@ -149,8 +162,8 @@ if(isDrawer){
   
           <button onClick={()=>{
             setDrawingType(1)
-          }} className="bg-blue-600 text-white md:text-6xl text-2xl w-20">
-            <div className="bg-white w-12 h-4 ml-4 -rotate-45"></div>
+          }} className="bg-blue-600 text-white md:text-6xl text-2xl md:w-20 w-12">
+            <div className="bg-white md:w-12 md:h-4 md:ml-4 -rotate-45 w-8 h-2 ml-2"></div>
           </button>
   
           <button className=" bg-blue-600 text-white md:text-6xl text-2xl " onClick={()=>{
@@ -175,7 +188,7 @@ else{
       socket.on('canvas-data',(data)=>{
         if(ctx && (data[0])){
           let drawerCanvasSize=data[0][5];
-          ctx.lineWidth=10;
+          ctx.lineWidth=2;
           ctx.lineCap="round";
           for(let i=0;i<data.length;i++){
             if(data[i][0]===1){

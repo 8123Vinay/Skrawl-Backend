@@ -85,7 +85,7 @@ socket.on('roundScore', (roundInfo, actualWord)=>{
 
 
   return (
-    <div className="w-full flex flex-col items-center h-80" >
+    <div className="w-full flex flex-col items-center" >
     <img src="Images/logo.png" className="w-[350px] max-h-24" />
     {wordPopUpTransition((style,item)=>{
       if(item){
