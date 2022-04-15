@@ -27,7 +27,7 @@ const sids = newSocket.instance.of("/").adapter.sids;
 
 
 
-const { startNewRound, handleMessage, wordChosen,startGameTimeOut,endGameTimeOut } = require("./models/Round")
+const { handleMessage, wordChosen } = require("./models/Round")
 const { roomStateMap, joinRoom, createRoom, socketIdMap, } = require("./services/state.js")
 const { startGame } = require('./models/Room')
 
@@ -87,7 +87,11 @@ newSocket.instance.on("connection", (socket) => {
 
       newSocket.instance.to(roomId).emit("joinedBefore", true, [...roomObj.playersMap]);
       let drawerId=roomObj.roundState.drawerId;
-      let drawerUserName=roomObj.playersMap.get(drawerId).userName;
+      let drawerUserName;
+      if(drawerId){
+         drawerUserName=roomObj.playersMap.get(drawerId).userName;
+      }
+     
       if(roomObj.roundState.choosingWord){
         setTimeout(()=>{
           newSocket.instance.to(socket.id).emit("joinedWhileChoosingWord", drawerUserName, roomObj.settings.timeLimit, [...roomObj.playersMap])
@@ -116,14 +120,20 @@ newSocket.instance.on("connection", (socket) => {
 })
 
 socket.on('startGame', (roomId, rounds, timeLimit) => {
-    let roomObj = roomStateMap.get(roomId)
+    let roomObj = roomStateMap.get(roomId);
 
     roomObj.settings.rounds = rounds;
     roomObj.settings.timeLimit = timeLimit;
     console.log(timeLimit,"This is time limit");
     roomObj.startState = true
-    // send a word to the user
+   
+
+    if((roomObj.timeOuts.startAgainTimeOut)){
+      clearTimeout(roomObj.timeOuts.startAgainTimeOut);
+    }
     startGame(roomObj, newSocket.instance, roomId);
+    
+
 
 
 })
@@ -144,6 +154,7 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
     // I have to collect the data in the fashion such a way that I will store the 
     // data and send it after 60 seconds;
     let roomObj = roomStateMap.get(roomId);
+    
     roomObj.roundState.lastCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
     roomObj.roundState.roundCanvasData.push([drawingType, startX, startY, endX, endY,canvasSize]);
   
@@ -153,12 +164,6 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
 
    
 
-    // add the data to the round
-    //run a timer of 100ms
-    // I can use set Interval and I can clear Interval 
-
-    // this is the data that is to be pushed in to the canvas data
-    // run a timer in the roundObj
 
   })
 
@@ -166,16 +171,15 @@ socket.on('startGame', (roomId, rounds, timeLimit) => {
 
 socket.on('chosenWord', (word, roomId) => {
 
-    let roomObj = roomStateMap.get(roomId)
-    startNewRound(roomObj, roomId, newSocket.instance);
+    let roomObj = roomStateMap.get(roomId);
     roomObj.roundState.wordToGuess=word;
-    wordChosen(word,roomObj,newSocket.instance,roomId)
+    clearInterval(roomObj.timeOuts.startRoundTimeOut);
+    wordChosen(word,roomObj,newSocket.instance,roomId);
+    console.log(roomObj.roundState.wordToGuess ,"this is wordToGuess")
+    
  
-  })
+})
 
-  socket.on('mouse', (e)=>{
-    console.log(e, "we have receieved");
-  })
 
 
   socket.on("disconnect", () => {
@@ -197,9 +201,10 @@ socket.on('chosenWord', (word, roomId) => {
 
     roomObj.roundState.playersMap.delete(socket.id);
 
-    if(roomObj.playersMap.size==1){
-      clearTimeout(startGameTimeOut);
-      clearTimeout(endGameTimeOut);
+    if(roomObj.playersMap.size<2){
+      clearTimeout(roomObj.timeOuts.startRoundTimeOut);
+      clearTimeout(roomObj.timeOuts.endRoundTimeOut);
+      // clearTimeout(roomObj.timeOuts.startAgainTimeOut)
       newSocket.instance.to(roomId).emit('gameEnded', [...roomObj.playersMap]);
       return;
     }

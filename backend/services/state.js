@@ -48,7 +48,8 @@ class RoundStateClass{
         this.drawerId=undefined;
         this.chooSingWord=false;
         this.lastCanvasData=[];
-        this.guessedArray=[];
+        this.guessedSet=new Set();
+       
     }
 }
 
@@ -62,6 +63,7 @@ class RoomStateClass{
         this.startState=startState
         this.roundsPlayed=1;
         this.joinedInBetween=[];
+        this.timeOuts={};
         
     }
 }

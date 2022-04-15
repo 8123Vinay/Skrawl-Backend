@@ -2,13 +2,6 @@
 const {startNewRound}=require("./Round")
 const { socketIdMap }=require("../services/state.js")
 
-function playerDisconnected(roomId,roomObj){
-  let userName=roomObj.playersMap.get(socket.id).userName;
-  roomObj.disconnectedSet.add(socket.id)
-  // I have to send 
-  
-  newSocket.instance.to(roomId).emit('playerDisconnected', userName);
-}
 
 // (roomObj,roomId, io, word)
 
